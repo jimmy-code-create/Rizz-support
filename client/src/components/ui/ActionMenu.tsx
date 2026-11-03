@@ -225,73 +225,73 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
         ? createPortal(
             <AnimatePresence>
               {open ? (
-                <div role="region" aria-label={`${label} menu`}>
-                <motion.div
-                  ref={menuRef}
-                  id={menuId}
-                  role="menu"
-                  aria-label={`${label} menu`}
-                  onKeyDown={onMenuKeyDown}
-                  initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -3, scale: 0.985 }}
-                  transition={
-                    reduceMotion
-                      ? { duration: 0 }
-                      : { type: 'spring', stiffness: 480, damping: 36, mass: 0.65 }
-                  }
-                  style={{
-                    position: 'fixed',
-                    top: position?.top ?? 0,
-                    left: position?.left ?? 0,
-                    width: position?.width ?? MENU_WIDTH,
-                    maxHeight: position?.maxHeight ?? 320,
-                    zIndex: 45,
-                    visibility: position ? 'visible' : 'hidden',
-                  }}
-                  className="overflow-y-auto overscroll-contain rounded-xl border border-line-strong bg-surface p-1.5 shadow-pop"
-                >
-                  {items.map((item, index) => {
-                    const Icon = item.icon;
-                    const itemClass = cn(
-                      'flex min-h-10 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[12.5px] transition-colors focus:bg-white/[0.06] focus:outline-none',
-                      item.tone === 'danger'
-                        ? 'text-error hover:bg-error/[0.08]'
-                        : 'text-ink hover:bg-white/[0.05]',
-                    );
-                    return item.to ? (
-                      <Link
-                        key={item.label}
-                        ref={(node) => {
-                          itemRefs.current[index] = node;
-                        }}
-                        to={item.to}
-                        role="menuitem"
-                        tabIndex={-1}
-                        onClick={() => close(false)}
-                        className={itemClass}
-                      >
-                        <Icon aria-hidden="true" className="size-3.5 shrink-0 opacity-70" />
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <button
-                        key={item.label}
-                        ref={(node) => {
-                          itemRefs.current[index] = node;
-                        }}
-                        type="button"
-                        role="menuitem"
-                        tabIndex={-1}
-                        onClick={() => runAction(item)}
-                        className={itemClass}
-                      >
-                        <Icon aria-hidden="true" className="size-3.5 shrink-0 opacity-70" />
-                        {item.label}
-                      </button>
-                    );
-                  })}
-                </motion.div>
+                <div role="region" aria-label="Issue actions">
+                  <motion.div
+                    ref={menuRef}
+                    id={menuId}
+                    role="menu"
+                    aria-label={`${label} menu`}
+                    onKeyDown={onMenuKeyDown}
+                    initial={reduceMotion ? false : { opacity: 0, y: -4, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -3, scale: 0.985 }}
+                    transition={
+                      reduceMotion
+                        ? { duration: 0 }
+                        : { type: 'spring', stiffness: 480, damping: 36, mass: 0.65 }
+                    }
+                    style={{
+                      position: 'fixed',
+                      top: position?.top ?? 0,
+                      left: position?.left ?? 0,
+                      width: position?.width ?? MENU_WIDTH,
+                      maxHeight: position?.maxHeight ?? 320,
+                      zIndex: 45,
+                      visibility: position ? 'visible' : 'hidden',
+                    }}
+                    className="overflow-y-auto overscroll-contain rounded-xl border border-line-strong bg-surface p-1.5 shadow-pop"
+                  >
+                    {items.map((item, index) => {
+                      const Icon = item.icon;
+                      const itemClass = cn(
+                        'flex min-h-10 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[12.5px] transition-colors focus:bg-white/[0.06] focus:outline-none',
+                        item.tone === 'danger'
+                          ? 'text-error hover:bg-error/[0.08]'
+                          : 'text-ink hover:bg-white/[0.05]',
+                      );
+                      return item.to ? (
+                        <Link
+                          key={item.label}
+                          ref={(node) => {
+                            itemRefs.current[index] = node;
+                          }}
+                          to={item.to}
+                          role="menuitem"
+                          tabIndex={-1}
+                          onClick={() => close(false)}
+                          className={itemClass}
+                        >
+                          <Icon aria-hidden="true" className="size-3.5 shrink-0 opacity-70" />
+                          {item.label}
+                        </Link>
+                      ) : (
+                        <button
+                          key={item.label}
+                          ref={(node) => {
+                            itemRefs.current[index] = node;
+                          }}
+                          type="button"
+                          role="menuitem"
+                          tabIndex={-1}
+                          onClick={() => runAction(item)}
+                          className={itemClass}
+                        >
+                          <Icon aria-hidden="true" className="size-3.5 shrink-0 opacity-70" />
+                          {item.label}
+                        </button>
+                      );
+                    })}
+                  </motion.div>
                 </div>
               ) : null}
             </AnimatePresence>,
