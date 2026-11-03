@@ -27,22 +27,16 @@ export function FaqPreview() {
   });
 
   return (
-    <section className="border-y border-line bg-surface/40 py-16 md:py-20" aria-labelledby="faq-preview-heading">
+    <section className="section border-y border-line-subtle bg-surface/40" aria-labelledby="faq-preview-heading">
       <div className="container-page">
         <div className="grid gap-9 lg:grid-cols-12 lg:gap-14">
           <div className="lg:col-span-4">
             <div className="lg:sticky lg:top-28">
-              <p className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-moss-soft">
-                <span className="size-1 rounded-full bg-lime" aria-hidden="true" />
-                Common questions
-              </p>
-              <h2
-                id="faq-preview-heading"
-                className="mt-3 text-[1.65rem] font-semibold leading-[1.15] tracking-[-0.03em] text-ink sm:text-[1.85rem]"
-              >
+              <p className="eyebrow">Common questions</p>
+              <h2 id="faq-preview-heading" className="section-title mt-3.5">
                 Answers, without the runaround
               </h2>
-              <p className="mt-3 max-w-xs text-[13px] leading-[1.7] text-muted">
+              <p className="mt-3 max-w-[30ch] text-[13px] leading-[1.7] text-muted">
                 Straight answers about accounts, reporting problems, and getting in touch with the
                 support team.
               </p>

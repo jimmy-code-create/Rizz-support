@@ -30,15 +30,15 @@ const KIND_ICON: Record<SearchKind, typeof FileText> = {
 };
 
 const VARIANT_FRAME: Record<SearchVariant, string> = {
-  hero: 'h-14 rounded-2xl px-4 sm:h-[60px] sm:px-5',
-  compact: 'h-11 rounded-xl px-3.5',
-  modal: 'h-14 rounded-xl px-4',
+  hero: 'h-14 rounded-[14px] px-4 sm:h-[58px]',
+  compact: 'h-11 rounded-[10px] px-3.5',
+  modal: 'h-[52px] rounded-xl px-4',
 };
 
 const VARIANT_INPUT: Record<SearchVariant, string> = {
-  hero: 'text-[14.5px] sm:text-[15px]',
-  compact: 'text-sm',
-  modal: 'text-[15px]',
+  hero: 'text-[16px] sm:text-[15px]',
+  compact: 'text-[16px] sm:text-sm',
+  modal: 'text-[16px] sm:text-[15px]',
 };
 
 export function SearchBox({
@@ -152,11 +152,9 @@ export function SearchBox({
         <div
           ref={frameRef}
           className={cn(
-            'group flex items-center gap-3 border bg-[#0e130d]/95 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.9)] transition-[border-color,box-shadow] duration-300',
+            'search-frame group',
             VARIANT_FRAME[variant],
-            showPanel
-              ? 'rounded-b-none border-lime/35 shadow-[0_0_0_4px_rgba(183,255,50,0.06),0_24px_60px_-30px_rgba(0,0,0,0.95)]'
-              : 'border-line-strong hover:border-lime/25 focus-within:border-lime/45 focus-within:shadow-[0_0_0_4px_rgba(183,255,50,0.06)]',
+            showPanel && 'border-lime/40',
           )}
         >
           <Search
@@ -179,7 +177,7 @@ export function SearchBox({
             aria-describedby={hintId}
             autoComplete="off"
             spellCheck={false}
-            placeholder="Search for help, articles, or common issues..."
+            placeholder={variant === 'hero' ? 'Search help articles, FAQs, or an issue...' : 'Search for help, articles, or common issues...'}
             value={query}
             onChange={(event) => {
               setQuery(event.target.value);
@@ -200,13 +198,13 @@ export function SearchBox({
                 inputRef.current?.focus();
               }}
               aria-label="Clear search"
-              className="rounded-md p-1 text-muted transition-colors hover:text-ink"
+              className="flex size-8 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
             >
               <X className="size-4" />
             </button>
           ) : (
-            <kbd className="hidden shrink-0 rounded-md border border-line bg-raised/70 px-1.5 py-1 font-sans text-[10.5px] font-medium text-muted sm:inline-flex">
-              ↵
+            <kbd className="hidden shrink-0 rounded-md border border-line bg-raised/70 px-1.5 py-1 font-sans text-[10px] font-medium text-faint sm:inline-flex">
+              Enter
             </kbd>
           )}
         </div>
@@ -216,7 +214,7 @@ export function SearchBox({
       </form>
 
       {showPanel ? (
-        <div className="absolute inset-x-0 top-full z-30 animate-scale-in overflow-hidden rounded-b-2xl border border-t-0 border-lime/35 bg-[#0d110c] shadow-[0_40px_80px_-30px_rgba(0,0,0,0.95)]">
+        <div className="absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 animate-scale-in overflow-hidden rounded-xl border border-line-strong bg-surface shadow-pop">
           {hits.length > 0 ? (
             <>
               <div
@@ -232,7 +230,7 @@ export function SearchBox({
                     .reduce((sum, entry) => sum + entry.hits.length, 0);
                   return (
                     <div key={group.kind} role="group" aria-label={group.label} className="pb-1.5">
-                      <p aria-hidden="true" className="px-2.5 pb-1 pt-2 text-[10px] font-medium uppercase tracking-[0.16em] text-moss-soft">
+                      <p aria-hidden="true" className="px-2.5 pb-1 pt-2 text-[9.5px] font-medium uppercase tracking-[0.16em] text-faint">
                         {group.label}
                       </p>
                       <div>
@@ -254,14 +252,14 @@ export function SearchBox({
                               onClick={() => goToHit(hit)}
                               className={cn(
                                 'flex cursor-pointer items-start gap-3 rounded-lg px-2.5 py-2.5 transition-colors duration-150',
-                                active ? 'bg-lime/[0.07]' : 'hover:bg-white/[0.025]',
+                                active ? 'bg-white/[0.045]' : 'hover:bg-white/[0.025]',
                               )}
                             >
                               <span
                                 className={cn(
                                   'mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md border transition-colors',
                                   active
-                                    ? 'border-lime/30 bg-lime/10 text-lime'
+                                    ? 'border-lime/25 bg-lime/[0.07] text-lime'
                                     : 'border-line bg-white/[0.02] text-muted',
                                 )}
                               >
@@ -291,7 +289,7 @@ export function SearchBox({
                   );
                 })}
               </div>
-              <div className="flex items-center justify-between gap-3 border-t border-line bg-black/20 px-4 py-2.5">
+              <div className="flex items-center justify-between gap-3 border-t border-line-subtle bg-black/20 px-4 py-2.5">
                 <span className="hidden items-center gap-1.5 text-[10.5px] text-muted sm:flex">
                   <CornerDownLeft aria-hidden="true" className="size-3" />
                   Enter to open · Esc to close
@@ -307,7 +305,7 @@ export function SearchBox({
               </div>
             </>
           ) : (
-            <div className="px-5 py-7">
+            <div className="px-5 py-6">
               <p className="text-[13px] font-medium text-ink">No results for “{query.trim()}”</p>
               <p className="mt-1.5 text-[12px] leading-relaxed text-muted">
                 Try a shorter phrase, or send us the details and we will look into it.
@@ -344,14 +342,14 @@ export function SearchBox({
       ) : null}
 
       {showPopular && !hasQuery ? (
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-          <span className="mr-0.5 text-[11px] text-muted/80">Popular searches</span>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <span className="mr-0.5 text-[10.5px] uppercase tracking-[0.12em] text-faint">Popular</span>
           {POPULAR_SEARCHES.map((entry) => (
             <button
               key={entry.label}
               type="button"
               onClick={() => runPopularSearch(entry.query)}
-              className="rounded-full border border-line bg-white/[0.02] px-3 py-1.5 text-[11.5px] text-muted transition-[color,border-color,background-color] duration-200 hover:border-lime/30 hover:bg-lime/[0.05] hover:text-lime"
+              className="rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-[color,border-color,background-color] duration-150 hover:border-line-strong hover:bg-white/[0.04] hover:text-ink"
             >
               {entry.label}
             </button>
@@ -371,7 +369,7 @@ export function PopularSearches({ onSelect, className }: { onSelect: (query: str
           key={entry.label}
           type="button"
           onClick={() => onSelect(entry.query)}
-          className="rounded-full border border-line bg-white/[0.02] px-3 py-1.5 text-[11.5px] text-muted transition-colors hover:border-lime/30 hover:text-lime"
+          className="rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-colors hover:border-lime/30 hover:text-lime"
         >
           {entry.label}
         </button>

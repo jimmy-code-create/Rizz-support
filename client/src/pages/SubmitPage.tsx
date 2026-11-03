@@ -111,6 +111,33 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function FormSection({
+  step,
+  title,
+  description,
+  children,
+}: {
+  step: string;
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="border-t border-line-subtle pt-7 first:border-t-0 first:pt-0">
+      <div className="flex items-start gap-3.5">
+        <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line bg-white/[0.02] font-mono text-[10.5px] text-muted">
+          {step}
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-[14px] font-medium tracking-[-0.01em] text-ink">{title}</h2>
+          <p className="mt-1 max-w-[52ch] text-[11.5px] leading-relaxed text-faint">{description}</p>
+        </div>
+      </div>
+      <div className="mt-5 space-y-5">{children}</div>
+    </section>
+  );
+}
+
 export function SubmitPage() {
   const [searchParams] = useSearchParams();
   const topic = searchParams.get('category') ?? '';
@@ -290,7 +317,7 @@ export function SubmitPage() {
       <section className="relative overflow-hidden">
         <div className="hero-ambient opacity-80" aria-hidden="true" />
         <div className="container-page relative max-w-3xl py-14 md:py-20">
-          <div className="animate-fade-up rounded-3xl border border-line-strong bg-card p-6 shadow-card sm:p-9">
+          <div className="animate-fade-up rounded-panel border border-line-subtle bg-card p-6 shadow-card sm:p-9">
             <span className="flex size-12 items-center justify-center rounded-2xl border border-lime/25 bg-lime/[0.08] text-lime">
               <CheckCircle2 aria-hidden="true" className="size-6" />
             </span>
@@ -307,7 +334,7 @@ export function SubmitPage() {
               will need it, together with this email address, to track the request.
             </p>
 
-            <div className="mt-7 flex flex-col gap-3 rounded-2xl border border-line bg-[#0c100b] p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-7 flex flex-col gap-3 rounded-card border border-line bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-[10.5px] uppercase tracking-[0.14em] text-moss-soft">Ticket reference</p>
                 <p className="mt-1.5 select-all font-mono text-[19px] tracking-[0.06em] text-lime">
@@ -317,7 +344,7 @@ export function SubmitPage() {
               <CopyButton value={ticket.reference} label="Copy reference" />
             </div>
 
-            <dl className="mt-6 grid gap-x-6 gap-y-4 border-t border-line pt-6 sm:grid-cols-2">
+            <dl className="mt-6 grid gap-x-6 gap-y-4 border-t border-line-subtle pt-6 sm:grid-cols-2">
               <div>
                 <dt className="text-[10.5px] uppercase tracking-[0.12em] text-moss-soft">Subject</dt>
                 <dd className="mt-1 break-words text-[13px] text-ink">{ticket.subject}</dd>
@@ -350,7 +377,7 @@ export function SubmitPage() {
               ) : null}
             </dl>
 
-            <div className="mt-8 flex flex-col gap-2 border-t border-line pt-6 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-2 border-t border-line-subtle pt-6 sm:flex-row">
               <Link
                 to={`/track?ticket=${encodeURIComponent(ticket.reference)}`}
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-lime px-5 text-sm font-medium text-[#0A0E08] transition-colors hover:bg-lime-deep"
@@ -380,7 +407,7 @@ export function SubmitPage() {
               { step: '02', title: 'Review', body: 'The team reads it and may ask for more detail.' },
               { step: '03', title: 'Tracking', body: 'Follow real updates with your reference.' },
             ].map((item) => (
-              <div key={item.step} className="rounded-xl border border-line bg-surface/60 p-4">
+              <div key={item.step} className="rounded-card border border-line-subtle bg-surface/60 p-4">
                 <p className="font-mono text-[10px] text-moss-soft">{item.step}</p>
                 <p className="mt-2 text-[12.5px] font-medium text-ink">{item.title}</p>
                 <p className="mt-1 text-[11px] leading-relaxed text-muted">{item.body}</p>
@@ -402,19 +429,32 @@ export function SubmitPage() {
         ]}
         title="Tell us what's going on"
         description="Share the details once and get a real ticket reference back. Fields marked with an asterisk are required."
-      />
+      >
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[11px] text-faint">
+          <span className="inline-flex items-center gap-1.5">
+            <ShieldCheck aria-hidden="true" className="size-3.5 text-moss-soft" />
+            Never share your password or sign-in codes
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <Info aria-hidden="true" className="size-3.5 text-moss-soft" />
+            Four short sections
+          </span>
+        </div>
+      </PageHeader>
 
       <div className="container-page py-10 md:py-14" ref={formTopRef}>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-14">
-          <form onSubmit={handleSubmit} noValidate className="min-w-0">
-            <div className="space-y-8">
-              <fieldset className="space-y-5">
-                <legend className="mb-4 flex w-full items-center gap-3 border-b border-line pb-3 text-[13px] font-medium text-ink">
-                  <span className="flex size-6 items-center justify-center rounded-full border border-line-strong bg-white/[0.02] font-mono text-[10px] text-lime">
-                    01
-                  </span>
-                  Your details
-                </legend>
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="min-w-0 rounded-panel border border-line-subtle bg-card/60 p-5 sm:p-7"
+          >
+            <div className="space-y-7">
+              <FormSection
+                step="01"
+                title="Your details"
+                description="So the team knows who to reply to. Use an email address you can access."
+              >
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Input
                     id="ticket-name"
@@ -444,15 +484,13 @@ export function SubmitPage() {
                     error={attempted ? errors.email : undefined}
                   />
                 </div>
-              </fieldset>
+              </FormSection>
 
-              <fieldset className="space-y-5">
-                <legend className="mb-4 flex w-full items-center gap-3 border-b border-line pb-3 text-[13px] font-medium text-ink">
-                  <span className="flex size-6 items-center justify-center rounded-full border border-line-strong bg-white/[0.02] font-mono text-[10px] text-lime">
-                    02
-                  </span>
-                  The issue
-                </legend>
+              <FormSection
+                step="02"
+                title="The issue"
+                description="Tell us what happened, what you expected, and the steps that lead to it."
+              >
                 <div className="grid gap-5 sm:grid-cols-2">
                   <Select
                     id="ticket-category"
@@ -500,16 +538,24 @@ export function SubmitPage() {
                     error={attempted ? errors.description : undefined}
                   />
                   <p
-                    aria-hidden="true"
                     className={cn(
-                      'mt-1.5 text-right font-mono text-[10px]',
-                      values.description.length > TICKET_LIMITS.description - 200 ? 'text-amber-300' : 'text-muted',
+                      'mt-1.5 text-right font-mono text-[10px] tabular-nums',
+                      values.description.length > TICKET_LIMITS.description - 200
+                        ? 'text-warning'
+                        : 'text-faint',
                     )}
                   >
-                    {values.description.length.toLocaleString()} / {TICKET_LIMITS.description.toLocaleString()}
+                    {values.description.length.toLocaleString()} /{' '}
+                    {TICKET_LIMITS.description.toLocaleString()}
                   </p>
                 </div>
+              </FormSection>
 
+              <FormSection
+                step="03"
+                title="Additional information"
+                description="Context that helps the team understand the issue. Browser details and attachments are optional."
+              >
                 <Input
                   id="ticket-browserInfo"
                   name="browserInfo"
@@ -522,149 +568,171 @@ export function SubmitPage() {
                   onChange={(event) => update('browserInfo', event.target.value)}
                   error={attempted ? errors.browserInfo : undefined}
                 />
-              </fieldset>
 
-              <fieldset>
-                <legend className="mb-3 text-[13px] font-medium text-ink">
-                  Priority <span className="text-lime" aria-hidden="true">*</span>
-                </legend>
-                <p className="mb-3 text-[11.5px] text-muted" id="priority-hint">
-                  Priority tells us how urgent the issue feels to you. It does not guarantee a response time.
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-                  {TICKET_PRIORITIES.map((priority) => {
-                    const selected = values.priority === priority.value;
-                    return (
-                      <label
-                        key={priority.value}
-                        className={cn(
-                          'relative flex cursor-pointer flex-col rounded-xl border p-3.5 transition-[border-color,background-color,box-shadow] focus-within:ring-2 focus-within:ring-lime/30',
-                          selected
-                            ? 'border-lime/35 bg-lime/[0.06]'
-                            : 'border-line bg-surface/50 hover:border-line-strong hover:bg-surface',
-                        )}
-                      >
-                        <input
-                          type="radio"
-                          name="priority"
-                          value={priority.value}
-                          checked={selected}
-                          onChange={() => update('priority', priority.value)}
-                          className="sr-only"
-                          aria-describedby="priority-hint"
-                        />
-                        <span className="flex items-center justify-between gap-2">
-                          <span className={cn('text-[12.5px] font-medium', selected ? 'text-lime' : 'text-ink')}>
-                            {priority.label}
-                          </span>
-                          <span
-                            aria-hidden="true"
-                            className={cn(
-                              'flex size-3.5 items-center justify-center rounded-full border',
-                              selected ? 'border-lime bg-lime' : 'border-line-strong',
-                            )}
-                          >
-                            {selected ? <span className="size-1.5 rounded-full bg-[#0A0E08]" /> : null}
-                          </span>
-                        </span>
-                        <span className="mt-1 text-[10.5px] leading-snug text-muted">{priority.hint}</span>
-                      </label>
-                    );
-                  })}
-                </div>
-              </fieldset>
-
-              <fieldset>
-                <legend className="mb-3 text-[13px] font-medium text-ink">
-                  Screenshot or attachment <span className="font-normal text-[11.5px] text-muted">Optional</span>
-                </legend>
-                <div
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    setDragging(true);
-                  }}
-                  onDragLeave={() => setDragging(false)}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    setDragging(false);
-                    handleFile(event.dataTransfer.files?.[0] ?? null);
-                  }}
-                  className={cn(
-                    'relative rounded-xl border border-dashed p-5 transition-[border-color,background-color,box-shadow] focus-within:border-lime/50 focus-within:ring-2 focus-within:ring-lime/20',
-                    dragging ? 'border-lime/50 bg-lime/[0.05]' : 'border-line-strong bg-surface/40 hover:border-lime/25',
-                    fileError ? 'border-red-400/50' : '',
-                  )}
-                >
-                  <input
-                    ref={fileInputRef}
-                    id="ticket-attachment"
-                    name="attachment"
-                    type="file"
-                    accept=".png,.jpg,.jpeg,.webp,.pdf,.txt,image/png,image/jpeg,image/webp,application/pdf,text/plain"
-                    aria-label="Attach a screenshot or supporting file"
-                    onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
-                    aria-describedby={fileError ? 'attachment-error' : 'attachment-hint'}
-                    aria-invalid={fileError ? true : undefined}
-                    className="absolute inset-0 z-10 size-full cursor-pointer opacity-0"
-                  />
-                  <div className="pointer-events-none flex flex-col items-center text-center">
-                    <span className="flex size-9 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-muted">
-                      <Upload aria-hidden="true" className="size-4" />
-                    </span>
-                    <p className="mt-2.5 text-[12px] text-ink">
-                      {file ? 'Replace attachment' : 'Drop a file here or click to browse'}
-                    </p>
-                    <p id="attachment-hint" className="mt-1 text-[10.5px] text-muted">
-                      PNG, JPEG, WebP, PDF, or TXT · up to 5 MB
-                    </p>
-                  </div>
-                </div>
-
-                {file ? (
-                  <div className="relative z-20 mt-2.5 flex items-center gap-3 rounded-xl border border-line bg-card p-3">
-                    <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-lime">
-                      {file.type.startsWith('image/') ? (
-                        <Paperclip aria-hidden="true" className="size-3.5" />
-                      ) : (
-                        <FileText aria-hidden="true" className="size-3.5" />
-                      )}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[12px] text-ink">{file.name}</p>
-                      <p className="text-[10.5px] text-muted">{formatFileSize(file.size)}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleFile(null)}
-                      aria-label={`Remove ${file.name}`}
-                      className="flex size-7 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/5 hover:text-ink"
-                    >
-                      <X aria-hidden="true" className="size-3.5" />
-                    </button>
-                  </div>
-                ) : null}
-
-                {fileError ? (
-                  <p id="attachment-error" role="alert" className="mt-2 flex items-center gap-1.5 text-[11.5px] text-red-300">
-                    <AlertTriangle aria-hidden="true" className="size-3.5" />
-                    {fileError}
+                <fieldset>
+                  <legend className="text-[13px] font-medium text-ink">
+                    Priority <span className="text-lime" aria-hidden="true">*</span>
+                  </legend>
+                  <p className="mt-1 text-[11.5px] text-faint" id="priority-hint">
+                    Priority tells us how urgent the issue feels to you. It does not guarantee a response time.
                   </p>
-                ) : null}
-              </fieldset>
+                  <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
+                    {TICKET_PRIORITIES.map((priority) => {
+                      const selected = values.priority === priority.value;
+                      return (
+                        <label
+                          key={priority.value}
+                          className={cn(
+                            'relative flex cursor-pointer flex-col rounded-[10px] border p-3.5 transition-[border-color,background-color,box-shadow] focus-within:ring-2 focus-within:ring-lime/30',
+                            selected
+                              ? 'border-line-strong bg-white/[0.045]'
+                              : 'border-line-subtle bg-surface/50 hover:border-line hover:bg-surface',
+                          )}
+                        >
+                          <input
+                            type="radio"
+                            name="priority"
+                            value={priority.value}
+                            checked={selected}
+                            onChange={() => update('priority', priority.value)}
+                            className="sr-only"
+                            aria-describedby="priority-hint"
+                          />
+                          <span className="flex items-center justify-between gap-2">
+                            <span className="text-[12.5px] font-medium text-ink">
+                              {priority.label}
+                            </span>
+                            <span
+                              aria-hidden="true"
+                              className={cn(
+                                'flex size-3.5 items-center justify-center rounded-full border',
+                                selected ? 'border-lime bg-lime' : 'border-line-strong',
+                              )}
+                            >
+                              {selected ? <span className="size-1.5 rounded-full bg-[#0A0E08]" /> : null}
+                            </span>
+                          </span>
+                          <span className="mt-1 text-[10.5px] leading-snug text-faint">
+                            {priority.hint}
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </fieldset>
 
-              <div className="border-t border-line pt-6">
+                <fieldset>
+                  <legend className="text-[13px] font-medium text-ink">
+                    Screenshot or attachment{' '}
+                    <span className="font-normal text-[11.5px] text-faint">Optional</span>
+                  </legend>
+                  <div
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      setDragging(true);
+                    }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      setDragging(false);
+                      handleFile(event.dataTransfer.files?.[0] ?? null);
+                    }}
+                    className={cn(
+                      'relative mt-2 rounded-input border border-dashed p-5 transition-[border-color,background-color,box-shadow] focus-within:border-lime/50 focus-within:ring-2 focus-within:ring-lime/20',
+                      dragging
+                        ? 'border-lime/40 bg-lime/[0.04]'
+                        : 'border-line-strong bg-surface/40 hover:border-line',
+                      fileError ? 'border-error/50' : '',
+                    )}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      id="ticket-attachment"
+                      name="attachment"
+                      type="file"
+                      accept=".png,.jpg,.jpeg,.webp,.pdf,.txt,image/png,image/jpeg,image/webp,application/pdf,text/plain"
+                      aria-label="Attach a screenshot or supporting file"
+                      onChange={(event) => handleFile(event.target.files?.[0] ?? null)}
+                      aria-describedby={fileError ? 'attachment-error' : 'attachment-hint'}
+                      aria-invalid={fileError ? true : undefined}
+                      className="absolute inset-0 z-10 size-full cursor-pointer opacity-0"
+                    />
+                    <div className="pointer-events-none flex flex-col items-center text-center">
+                      <span className="flex size-9 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-faint">
+                        <Upload aria-hidden="true" className="size-4" />
+                      </span>
+                      <p className="mt-2.5 text-[12px] text-ink">
+                        {file ? 'Replace attachment' : 'Drop a file here or click to browse'}
+                      </p>
+                      <p id="attachment-hint" className="mt-1 text-[10.5px] text-faint">
+                        PNG, JPEG, WebP, PDF, or TXT · up to 5 MB
+                      </p>
+                    </div>
+                  </div>
+
+                  {file ? (
+                    <div className="relative z-20 mt-2.5 flex items-center gap-3 rounded-[10px] border border-line bg-card p-3">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-lime">
+                        {file.type.startsWith('image/') ? (
+                          <Paperclip aria-hidden="true" className="size-3.5" />
+                        ) : (
+                          <FileText aria-hidden="true" className="size-3.5" />
+                        )}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[12px] text-ink">{file.name}</p>
+                        <p className="text-[10.5px] text-faint">{formatFileSize(file.size)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleFile(null)}
+                        aria-label={`Remove ${file.name}`}
+                        className="flex size-8 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
+                      >
+                        <X aria-hidden="true" className="size-3.5" />
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {fileError ? (
+                    <p id="attachment-error" role="alert" className="mt-2 flex items-center gap-1.5 text-[11.5px] text-error">
+                      <AlertTriangle aria-hidden="true" className="size-3.5" />
+                      {fileError}
+                    </p>
+                  ) : null}
+                </fieldset>
+              </FormSection>
+
+              <section className="border-t border-line-subtle pt-7">
+                <div className="flex items-start gap-3.5">
+                  <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full border border-line bg-white/[0.02] font-mono text-[10.5px] text-muted">
+                    04
+                  </span>
+                  <div>
+                    <h2 className="text-[14px] font-medium tracking-[-0.01em] text-ink">
+                      Review and submit
+                    </h2>
+                    <p className="mt-1 max-w-[52ch] text-[11.5px] leading-relaxed text-faint">
+                      Check the details above, then send the request. You will get a reference number
+                      only after it is saved.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <div className="rounded-input border border-line-subtle bg-surface/40 p-4 sm:p-5">
                 {errorCount > 0 && attempted ? (
-                  <div role="alert" className="mb-4 rounded-xl border border-red-400/25 bg-red-400/[0.06] p-3.5 text-[12px] text-red-200">
+                  <div role="alert" className="mb-4 rounded-xl border border-error/25 bg-error/[0.06] p-3.5 text-[12px] text-error">
                     Please check the {errorCount === 1 ? 'highlighted field' : `${errorCount} highlighted fields`} and try again.
                   </div>
                 ) : null}
 
                 {serverError ? (
-                  <div role="alert" className="mb-4 rounded-xl border border-amber-300/25 bg-amber-300/[0.06] p-4">
+                  <div role="alert" className="mb-4 rounded-xl border border-warning/25 bg-warning/[0.06] p-4">
                     <div className="flex items-start gap-2.5">
-                      <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-amber-200" />
+                      <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
                       <div className="min-w-0">
-                        <p className="text-[12.5px] text-amber-100">{serverError}</p>
+                        <p className="text-[12.5px] text-warning">{serverError}</p>
                         {duplicateReference ? (
                           <div className="mt-2 flex flex-wrap items-center gap-3">
                             <span className="rounded-md border border-line bg-black/20 px-2 py-1 font-mono text-[11px] text-ink">
@@ -694,18 +762,21 @@ export function SubmitPage() {
                   Submit support request
                   <ArrowRight aria-hidden="true" className="size-4" />
                 </Button>
-                <p className="mt-3 flex items-center gap-1.5 text-[10.5px] text-muted">
-                  <ShieldCheck aria-hidden="true" className="size-3.5" />
-                  You will get a reference number only after the request is saved.
+                <p className="mt-4 flex items-start gap-2 border-t border-line-subtle pt-4 text-[10.5px] leading-relaxed text-faint">
+                  <ShieldCheck aria-hidden="true" className="mt-px size-3.5 shrink-0" />
+                  We use these details only to respond to this request. Never include your password,
+                  an email sign-in code, or anyone else&apos;s private information.
                 </p>
-              </div>
+                  </div>
+                </div>
+              </section>
             </div>
           </form>
 
           <aside className="space-y-3 lg:sticky lg:top-28">
-            <div className="rounded-2xl border border-line bg-card p-5">
+            <div className="rounded-card border border-line-subtle bg-card p-5">
               <h2 className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
-                <LifeBuoy aria-hidden="true" className="size-4 text-lime" />
+                <LifeBuoy aria-hidden="true" className="size-4 text-moss-soft" />
                 Before you submit
               </h2>
               <ul className="mt-3 space-y-2.5">
@@ -721,18 +792,18 @@ export function SubmitPage() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-4 flex flex-wrap gap-2 border-t border-line pt-4">
-                <Link to="/help" className="text-[11.5px] font-medium text-lime hover:text-lime-deep">
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-line-subtle pt-4">
+                <Link to="/help" className="text-[11.5px] font-medium text-muted hover:text-lime">
                   Help articles
                 </Link>
-                <span aria-hidden="true" className="text-moss-soft">·</span>
-                <Link to="/faqs" className="text-[11.5px] font-medium text-lime hover:text-lime-deep">
+                <span aria-hidden="true" className="text-faint">·</span>
+                <Link to="/faqs" className="text-[11.5px] font-medium text-muted hover:text-lime">
                   FAQs
                 </Link>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-line bg-surface/60 p-5">
+            <div className="rounded-card border border-line-subtle bg-surface/60 p-5">
               <h2 className="text-[12.5px] font-medium text-ink">What happens next</h2>
               <ol className="mt-3 space-y-3">
                 {[
@@ -754,9 +825,9 @@ export function SubmitPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-line bg-surface/40 p-5">
+            <div className="rounded-card border border-line-subtle bg-surface/40 p-5">
               <h2 className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
-                <ShieldCheck aria-hidden="true" className="size-4 text-lime" />
+                <ShieldCheck aria-hidden="true" className="size-4 text-moss-soft" />
                 Keep it safe
               </h2>
               <p className="mt-2 text-[11.5px] leading-relaxed text-muted">

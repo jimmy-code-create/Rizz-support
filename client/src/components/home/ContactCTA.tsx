@@ -4,51 +4,50 @@ import { buttonClasses } from '@/components/ui/Button';
 
 export function ContactCTA() {
   return (
-    <section className="container-page py-16 md:py-20" aria-labelledby="contact-cta-heading">
-      <div className="relative overflow-hidden rounded-3xl border border-line-strong bg-gradient-to-b from-[#121810] to-[#0b0e0a] px-6 py-14 text-center sm:px-10 md:py-16">
+    <section className="container-page section-compact" aria-labelledby="contact-cta-heading">
+      <div className="relative overflow-hidden rounded-panel border border-line-subtle bg-card">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(640px_300px_at_50%_-10%,rgba(183,255,50,0.13),transparent_70%)]"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(560px_240px_at_8%_0%,rgba(183,255,50,0.07),transparent_70%)]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-px w-2/3 bg-gradient-to-r from-transparent via-lime/40 to-transparent"
+          className="pointer-events-none absolute inset-y-8 left-0 w-px bg-gradient-to-b from-transparent via-lime/30 to-transparent"
         />
-        <div className="relative mx-auto max-w-xl">
-          <p className="flex items-center justify-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-moss-soft">
-            <span className="size-1 rounded-full bg-lime" aria-hidden="true" />
-            Contact support
-          </p>
-          <h2
-            id="contact-cta-heading"
-            className="mt-3.5 text-[1.9rem] font-semibold leading-[1.1] tracking-[-0.035em] text-ink sm:text-[2.25rem]"
-          >
-            Still need a hand?
-          </h2>
-          <p className="mx-auto mt-3.5 max-w-md text-[13.5px] leading-[1.75] text-muted sm:text-sm">
-            Our team is here to help you get back on track.
-          </p>
-          <div className="mt-8 flex flex-col justify-center gap-2.5 sm:flex-row">
+
+        <div className="relative grid gap-8 p-6 sm:p-9 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-12 md:p-11">
+          <div>
+            <p className="eyebrow">Contact support</p>
+            <h2 id="contact-cta-heading" className="section-title mt-3.5">
+              Still need a hand?
+            </h2>
+            <p className="mt-3 max-w-[48ch] text-[13px] leading-[1.7] text-muted">
+              Our team is here to help you get back on track. Submit the details once and track the
+              real status with your reference.
+            </p>
+            <p className="mt-4 flex flex-wrap items-center gap-1.5 text-[10.5px] text-faint">
+              Support requests are handled through this Support Center.
+              <a
+                href="https://rizzapp.onrender.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 transition-colors hover:text-lime"
+              >
+                Back to Rizz
+                <ArrowUpRight aria-hidden="true" className="size-3" />
+              </a>
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-2 sm:flex-row md:flex-col md:items-stretch">
             <Link to="/submit" className={buttonClasses({ size: 'lg' })}>
-              Submit a Support Request
+              Submit a request
               <ArrowRight aria-hidden="true" className="size-4" />
             </Link>
             <Link to="/help" className={buttonClasses({ variant: 'secondary', size: 'lg' })}>
-              Explore Help Articles
+              Explore help articles
             </Link>
           </div>
-          <p className="mt-6 flex flex-wrap items-center justify-center gap-1.5 text-[10.5px] text-muted">
-            Support requests are handled through this Support Center.
-            <a
-              href="https://rizzapp.onrender.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-muted transition-colors hover:text-lime"
-            >
-              Back to Rizz
-              <ArrowUpRight aria-hidden="true" className="size-3" />
-            </a>
-          </p>
         </div>
       </div>
     </section>

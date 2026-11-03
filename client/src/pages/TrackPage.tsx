@@ -36,9 +36,9 @@ const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:]+@[^\s@<>()[\]\\,;:]+\.[A-Za-z]{2,}$/;
 
 const STATUS_DOT: Record<string, string> = {
   open: 'bg-lime',
-  in_progress: 'bg-sky-300',
-  waiting_for_user: 'bg-amber-200',
-  resolved: 'bg-emerald-300',
+  in_progress: 'bg-info',
+  waiting_for_user: 'bg-warning',
+  resolved: 'bg-success',
   closed: 'bg-muted/60',
 };
 
@@ -52,7 +52,7 @@ const AUTHOR_LABEL: Record<string, string> = {
 
 function ResultSkeleton() {
   return (
-    <div className="mt-5 rounded-2xl border border-line bg-card p-6" aria-busy="true" aria-label="Loading request">
+    <div className="mt-5 rounded-card border border-line-subtle bg-card p-6" aria-busy="true" aria-label="Loading request">
       <div className="flex items-center justify-between gap-4">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-6 w-20 rounded-full" />
@@ -178,7 +178,7 @@ export function TrackPage() {
             <form
               onSubmit={handleSubmit}
               noValidate
-              className="rounded-2xl border border-line bg-card p-5 shadow-card sm:p-6"
+              className="rounded-panel border border-line-subtle bg-card p-5 shadow-card sm:p-6"
             >
               <div className="grid gap-5 sm:grid-cols-2">
                 <Input
@@ -221,7 +221,7 @@ export function TrackPage() {
                   error={attempted ? errors.email : undefined}
                 />
               </div>
-              <div className="mt-5 flex flex-col gap-3 border-t border-line pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mt-5 flex flex-col gap-3 border-t border-line-subtle pt-5 sm:flex-row sm:items-center sm:justify-between">
                 <p className="flex items-center gap-1.5 text-[10.5px] text-muted">
                   <ShieldCheck aria-hidden="true" className="size-3.5" />
                   Only a matching reference and email reveal a request.
@@ -237,8 +237,8 @@ export function TrackPage() {
               {view === 'loading' ? <ResultSkeleton /> : null}
 
               {view === 'found' && ticket ? (
-                <div className="animate-fade-up mt-5 overflow-hidden rounded-2xl border border-line bg-card shadow-card">
-                  <div className="border-b border-line p-5 sm:p-6">
+                <div className="animate-fade-up mt-5 overflow-hidden rounded-panel border border-line-subtle bg-card shadow-card">
+                  <div className="border-b border-line-subtle p-5 sm:p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
                         <p className="text-[10.5px] uppercase tracking-[0.14em] text-moss-soft">Ticket reference</p>
@@ -258,7 +258,7 @@ export function TrackPage() {
                       {ticket.subject}
                     </h2>
 
-                    <dl className="mt-5 grid gap-x-6 gap-y-4 border-t border-line pt-5 sm:grid-cols-2 lg:grid-cols-4">
+                    <dl className="mt-5 grid gap-x-6 gap-y-4 border-t border-line-subtle pt-5 sm:grid-cols-2 lg:grid-cols-4">
                       <div>
                         <dt className="text-[10px] uppercase tracking-[0.12em] text-moss-soft">Submitted</dt>
                         <dd className="mt-1 break-words text-[12px] text-ink">{formatDateTime(ticket.createdAt) ?? '—'}</dd>
@@ -284,7 +284,7 @@ export function TrackPage() {
 
                   <div className="p-5 sm:p-6">
                     <h3 className="text-[12px] font-medium uppercase tracking-[0.12em] text-moss-soft">Your description</h3>
-                    <p className="mt-2.5 whitespace-pre-line break-words text-[12.5px] leading-[1.8] text-[#c0c7bb]">
+                    <p className="mt-2.5 whitespace-pre-line break-words text-[13px] leading-[1.8] text-ink-soft">
                       {ticket.description}
                     </p>
                     {ticket.browserInfo ? (
@@ -299,7 +299,7 @@ export function TrackPage() {
                     ) : null}
                   </div>
 
-                  <div className="border-t border-line bg-surface/40 p-5 sm:p-6">
+                  <div className="border-t border-line-subtle bg-surface/40 p-5 sm:p-6">
                     <div className="flex items-center justify-between gap-3">
                       <h3 className="text-[12px] font-medium uppercase tracking-[0.12em] text-moss-soft">Response history</h3>
                       <button
@@ -345,7 +345,7 @@ export function TrackPage() {
                                   {entry.status ? <StatusBadge status={entry.status} /> : null}
                                   {when ? <span className="text-[10px] text-muted">{when}</span> : null}
                                 </div>
-                                <p className="mt-1.5 whitespace-pre-line break-words text-[12px] leading-[1.75] text-[#bcc3b7]">
+                                <p className="mt-1.5 whitespace-pre-line break-words text-[12.5px] leading-[1.75] text-ink-soft">
                                   {entry.body}
                                 </p>
                               </div>
@@ -358,7 +358,7 @@ export function TrackPage() {
                     )}
                   </div>
 
-                  <div className="flex flex-col items-start justify-between gap-3 border-t border-line p-5 sm:flex-row sm:items-center sm:p-6">
+                  <div className="flex flex-col items-start justify-between gap-3 border-t border-line-subtle p-5 sm:flex-row sm:items-center sm:p-6">
                     <p className="flex items-center gap-1.5 text-[10.5px] text-muted">
                       <CalendarClock aria-hidden="true" className="size-3.5" />
                       Status shown as of {formatDateTime(ticket.updatedAt) ?? 'the last update'}.
@@ -371,7 +371,7 @@ export function TrackPage() {
               ) : null}
 
               {view === 'notfound' ? (
-                <div className="animate-fade-up mt-5 rounded-2xl border border-line bg-card p-6">
+                <div className="animate-fade-up mt-5 rounded-card border border-line-subtle bg-card p-6">
                   <span className="flex size-10 items-center justify-center rounded-xl border border-line bg-white/[0.02] text-muted">
                     <SearchX aria-hidden="true" className="size-5" />
                   </span>
@@ -405,8 +405,8 @@ export function TrackPage() {
               ) : null}
 
               {view === 'error' ? (
-                <div className="animate-fade-up mt-5 rounded-2xl border border-red-400/25 bg-red-400/[0.05] p-6" role="alert">
-                  <span className="flex size-10 items-center justify-center rounded-xl border border-red-400/25 bg-red-400/10 text-red-200">
+                <div className="animate-fade-up mt-5 rounded-card border border-error/25 bg-error/[0.05] p-6" role="alert">
+                  <span className="flex size-10 items-center justify-center rounded-xl border border-error/25 bg-error/10 text-error">
                     <CircleAlert aria-hidden="true" className="size-5" />
                   </span>
                   <h2 className="mt-4 text-[15px] font-medium text-ink">Tracking is unavailable right now</h2>
@@ -427,7 +427,7 @@ export function TrackPage() {
           </div>
 
           <aside className="space-y-3 lg:sticky lg:top-28">
-            <div className="rounded-2xl border border-line bg-card p-5">
+            <div className="rounded-card border border-line-subtle bg-card p-5">
               <h2 className="text-[12.5px] font-medium text-ink">What each status means</h2>
               <ul className="mt-3.5 space-y-3">
                 {TICKET_STATUSES.map((status) => (
@@ -445,9 +445,9 @@ export function TrackPage() {
               </ul>
             </div>
 
-            <div className="rounded-2xl border border-line bg-surface/60 p-5">
+            <div className="rounded-card border border-line-subtle bg-surface/60 p-5">
               <h2 className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
-                <Mail aria-hidden="true" className="size-4 text-lime" />
+                <Mail aria-hidden="true" className="size-4 text-moss-soft" />
                 Keep your reference
               </h2>
               <p className="mt-2 text-[11.5px] leading-relaxed text-muted">
@@ -456,9 +456,9 @@ export function TrackPage() {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-line bg-surface/40 p-5">
+            <div className="rounded-card border border-line-subtle bg-surface/40 p-5">
               <h2 className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
-                <LifeBuoy aria-hidden="true" className="size-4 text-lime" />
+                <LifeBuoy aria-hidden="true" className="size-4 text-moss-soft" />
                 Lost your reference?
               </h2>
               <p className="mt-2 text-[11.5px] leading-relaxed text-muted">

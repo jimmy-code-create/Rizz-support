@@ -50,7 +50,7 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
   }, []);
 
   return (
-    <div className={cn('divide-y divide-line overflow-hidden rounded-2xl border border-line bg-card', className)}>
+    <div className={cn('divide-y divide-line-subtle overflow-hidden rounded-card border border-line-subtle bg-card/70', className)}>
       {items.map((item) => {
         const open = openId === item.id;
         const panelId = `${idPrefix}-panel-${item.id}`;
@@ -65,14 +65,14 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
                 aria-controls={panelId}
                 onClick={() => toggle(item.id)}
                 className={cn(
-                  'group flex w-full items-center justify-between gap-6 px-5 py-5 text-left transition-colors duration-200 sm:px-6',
+                  'group flex min-h-[60px] w-full items-center justify-between gap-6 px-5 py-4.5 text-left transition-colors duration-200 sm:px-6',
                   open ? 'bg-white/[0.025]' : 'hover:bg-white/[0.02]',
                 )}
               >
                 <span
                   className={cn(
-                    'text-[14.5px] font-medium leading-snug tracking-[-0.01em] transition-colors',
-                    open ? 'text-lime' : 'text-ink group-hover:text-lime/90',
+                    'text-[14px] font-medium leading-snug tracking-[-0.012em] transition-colors sm:text-[14.5px]',
+                    open ? 'text-ink' : 'text-ink/90 group-hover:text-ink',
                   )}
                 >
                   {item.question}
@@ -80,8 +80,8 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
                 <span
                   aria-hidden="true"
                   className={cn(
-                    'flex size-7 shrink-0 items-center justify-center rounded-full border transition-all duration-300',
-                    open ? 'rotate-180 border-lime/30 bg-lime/10 text-lime' : 'border-line text-muted group-hover:border-line-strong',
+                    'flex size-7 shrink-0 items-center justify-center rounded-full border transition-[transform,border-color,color,background-color] duration-250',
+                    open ? 'rotate-180 border-line-strong bg-white/[0.04] text-lime' : 'border-line text-faint group-hover:border-line-strong group-hover:text-muted',
                   )}
                 >
                   <ChevronDown className="size-3.5" />
@@ -98,7 +98,7 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
               className="accordion-panel"
             >
               <div className="accordion-inner">
-                <div className="px-5 pb-5 pr-12 text-[13.5px] leading-[1.8] text-muted sm:px-6">
+                <div className="max-w-[64ch] px-5 pb-5 pr-12 text-[13px] leading-[1.8] text-muted sm:px-6 sm:text-[13.5px]">
                   {item.answer}
                 </div>
               </div>

@@ -21,26 +21,33 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   return (
-    <header className={cn('relative overflow-hidden border-b border-line', className)}>
-      <div className="hero-ambient opacity-60" aria-hidden="true" />
-      <div className="container-page relative py-10 md:py-14">
+    <header className={cn('relative overflow-hidden border-b border-line-subtle', className)}>
+      <div className="hero-ambient opacity-70" aria-hidden="true" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-line-strong to-transparent"
+      />
+      <div className="container-page relative py-9 sm:py-11 md:py-14">
         {breadcrumbs?.length ? (
-          <nav aria-label="Breadcrumb" className="mb-7">
-            <ol className="flex flex-wrap items-center gap-1.5 text-[11.5px] text-muted">
+          <nav aria-label="Breadcrumb" className="mb-6 sm:mb-7">
+            <ol className="flex flex-wrap items-center gap-1.5 text-[11px] text-faint">
               {breadcrumbs.map((crumb, index) => {
                 const last = index === breadcrumbs.length - 1;
                 return (
-                  <li key={`${crumb.label}-${index}`} className="flex items-center gap-1.5">
+                  <li key={`${crumb.label}-${index}`} className="flex min-w-0 items-center gap-1.5">
                     {crumb.to && !last ? (
                       <Link to={crumb.to} className="transition-colors hover:text-ink">
                         {crumb.label}
                       </Link>
                     ) : (
-                      <span className={last ? 'text-muted/90' : ''} aria-current={last ? 'page' : undefined}>
+                      <span
+                        className={cn('truncate', last ? 'max-w-[16rem] text-muted' : '')}
+                        aria-current={last ? 'page' : undefined}
+                      >
                         {crumb.label}
                       </span>
                     )}
-                    {!last ? <ChevronRight aria-hidden="true" className="size-3 text-moss-soft/70" /> : null}
+                    {!last ? <ChevronRight aria-hidden="true" className="size-3 shrink-0 text-faint/70" /> : null}
                   </li>
                 );
               })}
@@ -49,17 +56,10 @@ export function PageHeader({
         ) : null}
 
         <div className="max-w-3xl">
-          {eyebrow ? (
-            <p className="mb-3 flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.16em] text-moss-soft">
-              <span className="size-1 rounded-full bg-lime" aria-hidden="true" />
-              {eyebrow}
-            </p>
-          ) : null}
-          <h1 className="text-[2rem] font-semibold leading-[1.08] tracking-[-0.035em] text-ink sm:text-[2.5rem] md:text-[2.9rem]">
-            {title}
-          </h1>
+          {eyebrow ? <p className="eyebrow mb-3.5">{eyebrow}</p> : null}
+          <h1 className="page-title">{title}</h1>
           {description ? (
-            <p className="mt-3.5 max-w-2xl text-[14px] leading-[1.75] text-muted sm:text-[15px]">
+            <p className="mt-4 max-w-[62ch] text-[13.5px] leading-[1.75] text-muted sm:text-[14px]">
               {description}
             </p>
           ) : null}
