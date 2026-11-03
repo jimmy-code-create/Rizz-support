@@ -10,7 +10,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { SUPPORT_CATEGORIES, type CategoryId } from '@shared/support';
-import { articlesInCategory } from '@/data/articles';
+import { articlesInCategory } from '@/content/articles';
 
 const ICONS: Record<CategoryId, LucideIcon> = {
   account: LogIn,

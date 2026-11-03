@@ -72,6 +72,16 @@ npm run dev
 
 Open <http://localhost:5173>.
 
+Help content lives in `client/src/content` (kept out of the ignored runtime `/data/` directory).
+If you are updating an older checkout and Vite still reports a missing `@/content/...` module,
+stop the dev server, remove the Vite cache, and pull the latest `main` before restarting:
+
+```bash
+git pull
+rm -rf node_modules/.vite
+npm run dev
+```
+
 ### Production
 
 ```bash
@@ -104,7 +114,7 @@ client/
       search/      inline combobox + global command palette
       support/     page header, category grid, article cards
       ui/          buttons, fields, accordion, badge, toast, copy button, error boundary
-    data/          help articles and FAQs (single source of truth) + search index
+    content/       help articles and FAQs (single source of truth) + search index
     lib/           API client, formatting, SEO, search
     pages/         home, help, article, FAQs, submit, track, 404
 server/

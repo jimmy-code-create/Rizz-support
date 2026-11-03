@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, CalendarDays, Clock } from 'lucide-react';
 import { categoryById } from '@shared/support';
-import { readingTimeMinutes, type HelpArticle } from '@/data/articles';
+import { readingTimeMinutes, type HelpArticle } from '@/content/articles';
 import { formatDate, formatReadingTime } from '@/lib/format';
 import { Highlight } from '@/components/ui/Highlight';
 

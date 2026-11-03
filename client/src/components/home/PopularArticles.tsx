@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, ArrowUpRight, Clock } from 'lucide-react';
 import { categoryById } from '@shared/support';
-import { popularArticles, readingTimeMinutes } from '@/data/articles';
+import { popularArticles, readingTimeMinutes } from '@/content/articles';
 import { formatReadingTime } from '@/lib/format';
 import { buttonClasses } from '@/components/ui/Button';
 

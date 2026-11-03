@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { filterArticles, searchSupport, totalHits } from '@/lib/search';
-import { ARTICLES, readingTimeMinutes } from '@/data/articles';
+import { ARTICLES, readingTimeMinutes } from '@/content/articles';
 import { categoryById } from '@shared/support';
 
 describe('support search', () => {

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, Search, SearchX, X } from 'lucide-react';
 import { categoryById, SUPPORT_CATEGORIES } from '@shared/support';
-import { ARTICLES } from '@/data/articles';
+import { ARTICLES } from '@/content/articles';
 import { filterArticles } from '@/lib/search';
 import { usePageMeta } from '@/lib/seo';
 import { PageHeader } from '@/components/support/PageHeader';
