@@ -22,6 +22,8 @@ the Rizz application, and it owns its own database and uploads directory.
   attachment, duplicate protection, genuine submitted/error states, and a real ticket reference.
 - **Ticket tracking** backed by SQLite: reference + email, current status, submission and update
   timestamps, and the actual response history.
+- **Public community issue board** with real persisted upvotes, category filters, shareable issue
+  links, and a two-way bridge into the private support form.
 - **Global search palette** (`⌘K` / `Ctrl K` or `/`) and keyboard-navigable inline search.
 - Responsive navigation and layouts tested by breakpoint from 375 px to 1920 px, reduced-motion
   support, visible focus states, skip link, semantic landmarks, and meaningful page metadata.
@@ -38,8 +40,9 @@ These were not added because no verified destination or policy exists:
   published, so the site does not invent them.
 - **Fake ticket statuses, fake success messages, or placeholder article counts.**
 
-Brand artwork is loaded from the official Rizz site (`/brand/rizz-cat-logo.svg`) with a local
-fallback mark, so a network failure never breaks the header. All help copy was checked against the
+The header uses the local, verified brand mark. The remote cat logo on the Rizz site returned a
+server error, so the client no longer requests it at runtime and cannot flash a broken image. All
+help copy was checked against the
 live Rizz pages (`/`, `/signup`, `/login`); sign-in uses **email + password**, with a verified
 `/reset-password` flow behind the "Forgot?" link.
 
@@ -139,6 +142,9 @@ All responses are JSON and `Cache-Control: no-store`.
 | GET    | `/api/health`                        | Liveness                                           |
 | POST   | `/api/tickets`                       | Multipart form; 201 with `{ ticket }`              |
 | POST   | `/api/tickets/lookup`                | `{ reference, email }`; requires both to match     |
+| GET    | `/api/issues`                        | Public board; sets an anonymous voter cookie       |
+| POST   | `/api/issues`                        | `{ title, description, category }`; 201 `{ issue }`|
+| POST   | `/api/issues/:id/vote`               | Toggles the caller's upvote; `{ issue }`           |
 | PATCH  | `/api/admin/tickets/:ref/status`     | Bearer token; `{ status, message? }`               |
 
 ### Creating a ticket
@@ -173,6 +179,27 @@ curl -X POST http://localhost:3000/api/tickets/lookup \
 A wrong email and an unknown reference return the same generic **404**. Tickets are never listed or
 enumerated publicly, and the response omits the requester's name and email.
 
+### Using the public issue board
+
+```bash
+# List public reports (the response also sets an HttpOnly anonymous voter cookie)
+curl -c jar.txt http://localhost:3000/api/issues
+
+# Publish a public report; the reporter's first upvote is included
+curl -b jar.txt -c jar.txt -X POST http://localhost:3000/api/issues \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Voice room joins fail on a slow connection","description":"The join button keeps spinning and I never enter the room.","category":"technical"}'
+
+# Toggle your upvote on a report
+curl -b jar.txt -c jar.txt -X POST http://localhost:3000/api/issues/IS-ABC123/vote
+```
+
+Issues are public and deliberately separate from tickets: no email, attachment, or private reply is
+stored. The board returns the 100 most-upvoted reports, newest first on ties, and `voted` is scoped
+to the caller's anonymous cookie. Only a SHA-256 hash of that cookie is stored. A filled hidden
+`website` honeypot field is rejected with **400**. Publishing rate limit: 5 reports per 30 minutes;
+voting: 80 per 10 minutes.
+
 ### Updating status (admin)
 
 ```bash
@@ -200,7 +227,8 @@ Each update is appended to the ticket's response history with its timestamp.
 - Submitted fields are trimmed, length-limited, control characters stripped, and validated with Zod
   on the server. React escapes all rendered user content.
 - Rate limits: 180 requests/minute per IP overall, 8 ticket submissions per 10 minutes, 15 tracking
-  lookups per 10 minutes, 60 admin calls per 15 minutes.
+  lookups per 10 minutes, 5 public issue reports per 30 minutes, 80 issue votes per 10 minutes,
+  and 60 admin calls per 15 minutes.
 - The API sends a strict CSP, `nosniff`, frame protection suitable for the preview host, and a
   same-origin referrer policy.
 

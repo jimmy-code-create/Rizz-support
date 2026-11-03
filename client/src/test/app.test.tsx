@@ -39,8 +39,16 @@ describe('support center shell', () => {
     await screen.findByRole('heading', { level: 1, name: 'How can we help you?' });
 
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(primaryNav).getByRole('link', { name: 'Home' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     await user.click(within(primaryNav).getByRole('link', { name: 'Help Articles' }));
     expect(await screen.findByRole('heading', { level: 1, name: 'Help articles' })).toBeInTheDocument();
+    expect(within(primaryNav).getByRole('link', { name: 'Help Articles' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     expect(document.title).toContain('Help Articles');
 
     await user.click(within(primaryNav).getByRole('link', { name: 'FAQs' }));

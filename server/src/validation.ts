@@ -6,6 +6,7 @@ import {
   TICKET_REFERENCE_PATTERN,
   TICKET_STATUSES,
 } from '../../shared/support.ts';
+import { ISSUE_LIMITS } from '../../shared/issues.ts';
 
 const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:]+@[^\s@<>()[\]\\,;:]+\.[A-Za-z]{2,}$/;
 
@@ -64,6 +65,28 @@ export const createTicketSchema = z.object({
 });
 
 export type CreateTicketInput = z.infer<typeof createTicketSchema>;
+
+export const createIssueSchema = z.object({
+  title: requiredText(
+    ISSUE_LIMITS.title,
+    4,
+    'Add a short issue title (at least 4 characters).',
+    `Keep the title under ${ISSUE_LIMITS.title} characters.`,
+  ),
+  description: requiredText(
+    ISSUE_LIMITS.description,
+    20,
+    'Describe the issue in at least 20 characters.',
+    `Keep the description under ${ISSUE_LIMITS.description} characters.`,
+  ),
+  category: z.enum(ISSUE_CATEGORY_VALUES as [string, ...string[]]),
+  // Honeypot: hidden from real users.
+  website: z
+    .preprocess(cleanText, z.string().max(0, 'Rejected.').optional())
+    .optional(),
+});
+
+export type CreateIssueInput = z.infer<typeof createIssueSchema>;
 
 export const lookupTicketSchema = z.object({
   reference: z.preprocess(

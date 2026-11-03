@@ -12,6 +12,8 @@ const ArticlePage = lazy(() => import('@/pages/ArticlePage').then((module) => ({
 const FaqsPage = lazy(() => import('@/pages/FaqsPage').then((module) => ({ default: module.FaqsPage })));
 const SubmitPage = lazy(() => import('@/pages/SubmitPage').then((module) => ({ default: module.SubmitPage })));
 const TrackPage = lazy(() => import('@/pages/TrackPage').then((module) => ({ default: module.TrackPage })));
+const IssuesPage = lazy(() => import('@/pages/IssuesPage').then((module) => ({ default: module.IssuesPage })));
+const NewIssuePage = lazy(() => import('@/pages/NewIssuePage').then((module) => ({ default: module.NewIssuePage })));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage })));
 
 export function App() {
@@ -29,6 +31,8 @@ export function App() {
                   <Route path="faqs" element={<FaqsPage />} />
                   <Route path="submit" element={<SubmitPage />} />
                   <Route path="track" element={<TrackPage />} />
+                  <Route path="issues" element={<IssuesPage />} />
+                  <Route path="issues/new" element={<NewIssuePage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
               </Routes>

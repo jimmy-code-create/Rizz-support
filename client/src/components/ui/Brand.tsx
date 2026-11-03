@@ -1,13 +1,11 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/cn';
 
-const OFFICIAL_LOGO = 'https://rizzapp.onrender.com/brand/rizz-cat-logo.svg';
-const FALLBACK_LOGO = '/brand/rizz-mark.svg';
+// Local, verified brand mark. The remote cat logo returns a server error and
+// caused a broken-image flash in the header, so it is not requested at runtime.
+const BRAND_MARK = '/brand/rizz-mark.svg';
 
 export function BrandMark({ size = 30, className }: { size?: number; className?: string }) {
-  const [src, setSrc] = useState(OFFICIAL_LOGO);
-
   return (
     <span
       className={cn(
@@ -17,13 +15,12 @@ export function BrandMark({ size = 30, className }: { size?: number; className?:
       style={{ width: size, height: size }}
     >
       <img
-        src={src}
+        src={BRAND_MARK}
         alt=""
         aria-hidden="true"
         width={size - 8}
         height={size - 8}
         className="object-contain"
-        onError={() => setSrc(FALLBACK_LOGO)}
         draggable={false}
       />
     </span>

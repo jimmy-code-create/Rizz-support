@@ -23,6 +23,7 @@ import {
   type IssueCategory,
   type TicketPriority,
 } from '@shared/support';
+import { ISSUE_ID_PATTERN } from '@shared/issues';
 import type { TicketSummary } from '@shared/ticket';
 import { ApiError, submitSupportRequest } from '@/lib/api';
 import { formatDateTime } from '@/lib/format';
@@ -144,9 +145,18 @@ function FormSection({
 export function SubmitPage() {
   const [searchParams] = useSearchParams();
   const topic = searchParams.get('category') ?? '';
+  const subjectParam = searchParams.get('subject') ?? '';
+  const descriptionParam = searchParams.get('description') ?? '';
+  const issueParam = searchParams.get('issue')?.toUpperCase() ?? '';
+  const relatedIssue = ISSUE_ID_PATTERN.test(issueParam) ? issueParam : '';
   const initialValues = useMemo<FormValues>(
-    () => ({ ...EMPTY_VALUES, category: CATEGORY_FROM_TOPIC[topic] ?? '' }),
-    [topic],
+    () => ({
+      ...EMPTY_VALUES,
+      category: CATEGORY_FROM_TOPIC[topic] ?? '',
+      subject: subjectParam.slice(0, TICKET_LIMITS.subject),
+      description: descriptionParam.slice(0, TICKET_LIMITS.description),
+    }),
+    [topic, subjectParam, descriptionParam],
   );
 
   const [values, setValues] = useState<FormValues>(initialValues);
@@ -454,6 +464,22 @@ export function SubmitPage() {
             noValidate
             className="min-w-0 rounded-panel border border-line-subtle bg-card/60 p-5 sm:p-7"
           >
+            {relatedIssue ? (
+              <div
+                role="note"
+                className="mb-6 flex items-start gap-2.5 rounded-xl border border-lime/20 bg-lime/[0.05] p-4 text-[11.5px] leading-relaxed text-ink-soft"
+              >
+                <Info aria-hidden="true" className="mt-px size-4 shrink-0 text-lime" />
+                <p>
+                  Following up on public issue{' '}
+                  <Link to={`/issues#${relatedIssue}`} className="font-mono text-lime hover:text-lime-deep">
+                    {relatedIssue}
+                  </Link>
+                  . The board text is filled in below; add what happened for you. This request stays
+                  private.
+                </p>
+              </div>
+            ) : null}
             <div className="space-y-7">
               <FormSection
                 step="01"

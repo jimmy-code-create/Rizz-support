@@ -3,6 +3,8 @@ import type {
   CreateTicketResponse,
   LookupTicketResponse,
 } from '@shared/ticket';
+import type { CreateIssueResponse, ListIssuesResponse, ToggleIssueVoteResponse } from '@shared/issues';
+import type { IssueCategory } from '@shared/support';
 
 export class ApiError extends Error {
   readonly status: number;
@@ -88,5 +90,29 @@ export function lookupSupportTicket(reference: string, email: string): Promise<L
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ reference, email }),
+  });
+}
+
+
+export function listPublicIssues(): Promise<ListIssuesResponse> {
+  return request<ListIssuesResponse>('/api/issues', { method: 'GET' });
+}
+
+export function createPublicIssue(input: {
+  title: string;
+  description: string;
+  category: IssueCategory;
+  website?: string;
+}): Promise<CreateIssueResponse> {
+  return request<CreateIssueResponse>('/api/issues', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+}
+
+export function togglePublicIssueVote(issueId: string): Promise<ToggleIssueVoteResponse> {
+  return request<ToggleIssueVoteResponse>(`/api/issues/${encodeURIComponent(issueId)}/vote`, {
+    method: 'POST',
   });
 }

@@ -47,6 +47,28 @@ CREATE TABLE IF NOT EXISTS ticket_messages (
 
 CREATE INDEX IF NOT EXISTS idx_messages_ticket
   ON ticket_messages (ticket_id, created_at);
+
+CREATE TABLE IF NOT EXISTS issues (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  public_id TEXT NOT NULL UNIQUE,
+  title TEXT NOT NULL,
+  title_normalized TEXT NOT NULL,
+  description TEXT NOT NULL,
+  category TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open',
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_issues_board
+  ON issues (created_at DESC);
+
+CREATE TABLE IF NOT EXISTS issue_votes (
+  issue_id INTEGER NOT NULL REFERENCES issues(id) ON DELETE CASCADE,
+  voter_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  PRIMARY KEY (issue_id, voter_hash)
+);
 `;
 
 export function openDatabase(dataDir: string): Database {

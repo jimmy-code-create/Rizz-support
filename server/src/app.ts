@@ -1,12 +1,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { createHash, timingSafeEqual } from 'node:crypto';
+import { createHash, randomUUID, timingSafeEqual } from 'node:crypto';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import helmet from 'helmet';
 import multer from 'multer';
 import type { Database } from './db.ts';
 import { openDatabase } from './db.ts';
 import { createTicketStore, type TicketStore } from './tickets.ts';
+import { createIssueStore, type IssueStore } from './issues.ts';
 import { buildRateLimiters } from './rate-limit.ts';
 import {
   UploadValidationError,
@@ -15,12 +16,14 @@ import {
   uploadMiddleware,
 } from './uploads.ts';
 import {
+  createIssueSchema,
   createTicketSchema,
   fieldErrors,
   lookupTicketSchema,
   updateTicketSchema,
 } from './validation.ts';
 import { isValidReference, normalizeReference } from './reference.ts';
+import { ISSUE_ID_PATTERN } from '../../shared/issues.ts';
 
 export interface CreateAppOptions {
   dataDir: string;
@@ -33,6 +36,7 @@ export interface CreatedApp {
   app: express.Express;
   database: Database;
   store: TicketStore;
+  issueStore: IssueStore;
   close: () => void;
 }
 
@@ -44,9 +48,47 @@ function tokenMatches(provided: string, expected: string): boolean {
   return timingSafeEqual(sha256(provided), sha256(expected));
 }
 
+const VOTER_COOKIE = 'rizz_voter';
+const VOTER_COOKIE_PATTERN = /^[0-9a-f-]{36}$/i;
+
+function readCookie(request: Request, name: string): string | null {
+  const header = request.headers.cookie;
+  if (!header) return null;
+  for (const part of header.split(';')) {
+    const separator = part.indexOf('=');
+    if (separator === -1) continue;
+    if (part.slice(0, separator).trim() !== name) continue;
+    try {
+      return decodeURIComponent(part.slice(separator + 1).trim());
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Anonymous, HttpOnly voter identity for the public issue board. Only the
+ * SHA-256 hash is stored; the raw random id never enters the database.
+ */
+function voterHashFor(request: Request, response: Response): string {
+  let voterId = readCookie(request, VOTER_COOKIE);
+  if (!voterId || !VOTER_COOKIE_PATTERN.test(voterId)) {
+    voterId = randomUUID();
+    response.cookie(VOTER_COOKIE, voterId, {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 365 * 24 * 60 * 60 * 1000,
+    });
+  }
+  return createHash('sha256').update(voterId).digest('hex');
+}
+
 export function createApp(options: CreateAppOptions): CreatedApp {
   const database = openDatabase(options.dataDir);
   const store = createTicketStore(database.db);
+  const issueStore = createIssueStore(database.db);
   const limiters = buildRateLimiters(options.rateLimit !== false);
   const app = express();
   const adminToken = options.adminToken?.trim() || null;
@@ -187,6 +229,74 @@ export function createApp(options: CreateAppOptions): CreatedApp {
     }
 
     response.json({ ticket });
+  });
+
+  // Public issue board. Reports are public and deliberately contain no email,
+  // ticket reference, or private support conversation.
+  app.get('/api/issues', (request, response) => {
+    const voterHash = voterHashFor(request, response);
+    // The `voted` flag is per anonymous visitor, so this response must never be
+    // shared from a cache.
+    response.setHeader('Cache-Control', 'no-store');
+    response.setHeader('Vary', 'Cookie');
+    response.json({ issues: issueStore.list(voterHash) });
+  });
+
+  app.post('/api/issues', limiters.createIssue, (request, response, next) => {
+    try {
+      const body = (request.body ?? {}) as Record<string, unknown>;
+      if (typeof body.website === 'string' && body.website.trim().length > 0) {
+        response.status(400).json({
+          error: { code: 'INVALID_REQUEST', message: 'The report could not be accepted.' },
+        });
+        return;
+      }
+
+      const parsed = createIssueSchema.safeParse(body);
+      if (!parsed.success) {
+        response.status(422).json({
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Please correct the highlighted fields and try again.',
+            fields: fieldErrors(parsed.error),
+          },
+        });
+        return;
+      }
+
+      const voterHash = voterHashFor(request, response);
+      const issue = issueStore.create(
+        {
+          title: parsed.data.title,
+          description: parsed.data.description,
+          category: parsed.data.category as Parameters<typeof issueStore.create>[0]['category'],
+        },
+        voterHash,
+      );
+      response.status(201).json({ issue });
+    } catch (error) {
+      next(error);
+    }
+  });
+
+  app.post('/api/issues/:issueId/vote', limiters.voteIssue, (request, response, next) => {
+    try {
+      const issueId = String(request.params.issueId ?? '').toUpperCase();
+      if (!ISSUE_ID_PATTERN.test(issueId)) {
+        response.status(404).json({ error: { code: 'ISSUE_NOT_FOUND', message: 'Issue not found.' } });
+        return;
+      }
+
+      const voterHash = voterHashFor(request, response);
+      const issue = issueStore.toggleVote(issueId, voterHash);
+      if (!issue) {
+        response.status(404).json({ error: { code: 'ISSUE_NOT_FOUND', message: 'Issue not found.' } });
+        return;
+      }
+      response.json({ issue });
+    } catch (error) {
+      next(error);
+    }
   });
 
   // Admin API. Completely disabled (404) unless SUPPORT_ADMIN_TOKEN is configured.
@@ -340,6 +450,7 @@ export function createApp(options: CreateAppOptions): CreatedApp {
     app,
     database,
     store,
+    issueStore,
     close: () => database.close(),
   };
 }

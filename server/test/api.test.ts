@@ -5,6 +5,7 @@ import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp, type CreatedApp } from '../src/app.ts';
 import { TICKET_REFERENCE_PATTERN } from '../../shared/support.ts';
+import { ISSUE_ID_PATTERN } from '../../shared/issues.ts';
 
 const VALID = {
   name: 'Test Person',
@@ -215,6 +216,57 @@ describe('support API', () => {
       .set('Authorization', 'Bearer test-admin-token-0123456789')
       .send({ status: 'resolved' })
       .expect(404);
+  });
+
+  it('creates, lists and toggles votes on public issues', async () => {
+    const creator = request.agent(app.app);
+    const created = await creator
+      .post('/api/issues')
+      .send({
+        title: 'Voice room joins fail on a slow connection',
+        description:
+          'Joining a voice room sometimes leaves the join button spinning without entering the room.',
+        category: 'technical',
+      })
+      .expect(201);
+
+    const issue = created.body.issue;
+    expect(issue.id).toMatch(ISSUE_ID_PATTERN);
+    expect(issue.votes).toBe(1);
+    expect(issue.voted).toBe(true);
+    expect(issue.status).toBe('open');
+
+    const listed = await creator.get('/api/issues').expect(200);
+    const listedIssue = listed.body.issues.find((entry: { id: string }) => entry.id === issue.id);
+    expect(listedIssue).toBeTruthy();
+    expect(listedIssue.votes).toBe(1);
+    expect(listedIssue.voted).toBe(true);
+    expect(listedIssue.description).toBe(
+      'Joining a voice room sometimes leaves the join button spinning without entering the room.',
+    );
+
+    const otherVoter = request.agent(app.app);
+    const upvoted = await otherVoter.post(`/api/issues/${issue.id.toLowerCase()}/vote`).expect(200);
+    expect(upvoted.body.issue.votes).toBe(2);
+    expect(upvoted.body.issue.voted).toBe(true);
+
+    const removed = await otherVoter.post(`/api/issues/${issue.id}/vote`).expect(200);
+    expect(removed.body.issue.votes).toBe(1);
+    expect(removed.body.issue.voted).toBe(false);
+  });
+
+  it('rejects invalid public issues and unknown issue votes', async () => {
+    await request(app.app)
+      .post('/api/issues')
+      .send({ title: 'No', description: 'too short', category: 'nope' })
+      .expect(422);
+
+    await request(app.app)
+      .post('/api/issues')
+      .send({ title: 'Honeypot check', description: 'This should never reach the board.', category: 'bug', website: 'spam.example' })
+      .expect(400);
+
+    await request(app.app).post('/api/issues/IS-ZZZZZZ/vote').expect(404);
   });
 
   it('returns 404 for a missing static asset instead of the SPA shell', async () => {
