@@ -1,0 +1,12 @@
+node_modules/
+dist/
+client/dist/
+data/
+server/dist/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+coverage/
+*.tsbuildinfo
