@@ -25,8 +25,9 @@ the Rizz application, and it owns its own database and uploads directory.
 - **Public community issue board** with real persisted upvotes, category filters, shareable issue
   links, and a two-way bridge into the private support form.
 - **Global search palette** (`⌘K` / `Ctrl K` or `/`) and keyboard-navigable inline search.
-- Responsive navigation and layouts tested by breakpoint from 375 px to 1920 px, reduced-motion
-  support, visible focus states, skip link, semantic landmarks, and meaningful page metadata.
+- Responsive navigation and layouts checked from 360 px through 430 px (375/390/412/430), tablet,
+  and desktop widths, with reduced-motion support, visible focus states, skip link, semantic
+  landmarks, and meaningful page metadata.
 - **Admin status API** to move tickets through Open → In Progress → Waiting for User → Resolved →
   Closed and add a support response, protected by an environment token.
 
@@ -59,6 +60,10 @@ live Rizz pages (`/`, `/signup`, `/login`); sign-in uses **email + password**, w
 | API       | Express 5, Zod validation, Helmet, express-rate-limit, Multer |
 | Database  | SQLite via Node's built-in `node:sqlite` (no native builds)    |
 | Tests     | Vitest 5, Testing Library, Supertest, axe-core                 |
+
+This repository is implemented as a **Vite 7 + React Router 7** single-page app. It is not built on
+TanStack Start; the SPA is served by the Express API with a history fallback, which is what the
+build and server configuration in this checkout support.
 
 **Requires Node.js 22.5 or newer** because the API uses `node:sqlite`.
 
@@ -256,15 +261,16 @@ The image runs as the non-root `node` user, stores data under `/data`, and expos
 
 ```bash
 npm run typecheck   # client + server TypeScript
-npm test            # 36 Vitest tests
+npm test            # 56 Vitest tests
 npm audit --omit=dev
 ```
 
 The suite covers API creation, lookup privacy, duplicate protection, friendly validation errors,
 honeypot rejection, magic-byte upload checks, file-size rejection, admin authentication and status
 history, rate limiting, SPA fallback/security headers, search ranking and filtering, accordion
-behaviour, search navigation, form validation/success/failure states, full-app routing, and an
-axe-core accessibility audit of the home, help, article, FAQ, submit, and track pages.
+behaviour, search navigation and viewport clamping at 360/375/390/412/430 px, the contextual issue
+menu, form validation/success/failure states, full-app routing, and an axe-core accessibility audit
+of the home, help, article, FAQ, submit, track, and issue board pages.
 
 ---
 

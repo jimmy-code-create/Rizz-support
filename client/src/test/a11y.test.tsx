@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import axe from 'axe-core';
 import { App } from '@/App';
@@ -53,10 +53,25 @@ describe('accessibility', () => {
     render(<App />);
     const input = await screen.findByRole('combobox', { name: 'Search help, articles, or common issues' });
     await user.click(input);
-    await screen.findByText('Popular searches');
+    await screen.findByText('Search suggestions');
     await expectNoViolations();
     await user.type(input, 'bug');
     await screen.findByRole('listbox');
+    await expectNoViolations();
+  });
+
+  it('command palette and inline results have no axe violations', async () => {
+    window.history.replaceState({}, '', '/');
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'How can we help you?' });
+
+    await user.click(screen.getByRole('button', { name: 'Search the support center' }));
+    const dialog = await screen.findByRole('dialog', { name: 'Search the Rizz Support Center' });
+    await expectNoViolations();
+
+    await user.type(within(dialog).getByRole('combobox'), 'bug');
+    await within(dialog).findByRole('option', { name: /How to report a bug/i });
     await expectNoViolations();
   });
 

@@ -48,7 +48,7 @@ export function BrandHomeLink({ compact = false }: { compact?: boolean }) {
     <Link
       to="/"
       aria-label="Rizz Support Center home"
-      className="group inline-flex min-w-0 rounded-lg transition-opacity hover:opacity-90"
+      className="group inline-flex min-h-11 min-w-0 items-center rounded-lg transition-opacity hover:opacity-90"
     >
       <BrandLockup compact={compact} />
     </Link>

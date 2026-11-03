@@ -68,7 +68,7 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
                 aria-controls={panelId}
                 onClick={() => toggle(item.id)}
                 className={cn(
-                  'group flex min-h-[60px] w-full items-center justify-between gap-6 px-5 py-4.5 text-left transition-colors duration-200 sm:px-6',
+                  'group flex min-h-[60px] w-full items-center justify-between gap-6 px-5 py-4.5 text-left transition-colors duration-200 focus-visible:outline-offset-[-2px] sm:px-6',
                   open ? 'bg-white/[0.025]' : 'hover:bg-white/[0.02]',
                 )}
               >

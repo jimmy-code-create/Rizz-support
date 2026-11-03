@@ -31,7 +31,7 @@ export function ContactCTA() {
                 href="https://rizzapp.onrender.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 transition-colors hover:text-lime"
+                className="inline-flex min-h-11 items-center gap-1 transition-colors hover:text-lime sm:min-h-9"
               >
                 Back to Rizz
                 <ArrowUpRight aria-hidden="true" className="size-3" />

@@ -22,7 +22,7 @@ export function Layout() {
     <div className="flex min-h-dvh flex-col overflow-x-clip bg-base">
       <SkipLink />
       <Navbar />
-      <main id="main-content" ref={mainRef} tabIndex={-1} className="flex-1 focus:outline-none">
+      <main id="main-content" ref={mainRef} tabIndex={-1} className="flex-1 scroll-mt-16 focus:outline-none">
         <motion.div
           key={pathname}
           initial={reduceMotion ? false : { opacity: 0, y: 5 }}

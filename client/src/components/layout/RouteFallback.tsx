@@ -2,7 +2,7 @@ import { Skeleton } from '@/components/ui/Skeleton';
 
 export function RouteFallback() {
   return (
-    <div className="container-page py-14" aria-busy="true" aria-label="Loading page">
+    <div className="container-page py-14" role="status" aria-busy="true" aria-label="Loading page">
       <Skeleton className="h-3 w-24" />
       <Skeleton className="mt-5 h-10 w-2/3 max-w-lg" />
       <Skeleton className="mt-4 h-4 w-full max-w-xl" />

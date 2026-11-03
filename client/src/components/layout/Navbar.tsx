@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, ArrowUpRight, Menu, Plus, Search, X } from 'lucide-react';
@@ -55,6 +56,18 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // The drawer is mobile-only. If the viewport crosses into the desktop nav,
+  // close it so the page cannot stay scroll-locked behind a hidden drawer.
+  useEffect(() => {
+    const media = window.matchMedia?.('(min-width: 1024px)');
+    if (!media) return;
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setMobileOpen(false);
+    };
+    media.addEventListener('change', onChange);
+    return () => media.removeEventListener('change', onChange);
+  }, []);
+
   useEffect(() => {
     if (!mobileOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -93,177 +106,208 @@ export function Navbar() {
   }, [mobileOpen]);
 
   return (
-    <header
-      className={cn(
-        'sticky top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-200',
-        scrolled || mobileOpen
-          ? 'border-line-subtle bg-base/90 shadow-[0_1px_0_rgba(245,247,242,0.02)] backdrop-blur-xl'
-          : 'border-line-subtle/70 bg-base/70 backdrop-blur-md',
-      )}
-    >
-      <div className="container-page">
-        <div className="flex h-16 items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-7">
-            <BrandHomeLink compact />
-            <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
-              {NAV_LINKS.map((link) => {
-                const active = link.match(pathname);
-                return (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    aria-current={active ? 'page' : undefined}
-                    className="nav-link"
-                  >
-                    {link.label}
-                    {active ? (
-                      <motion.span
-                        layoutId="primary-nav-underline"
-                        aria-hidden="true"
-                        className="absolute inset-x-0 -bottom-px h-[1.5px] rounded-full bg-lime"
-                        transition={
-                          reduceMotion
-                            ? { duration: 0 }
-                            : { type: 'spring', stiffness: 520, damping: 42, mass: 0.6 }
-                        }
-                      />
-                    ) : null}
-                  </Link>
-                );
-              })}
-            </nav>
-          </div>
+    <>
+      <header
+        className={cn(
+          'sticky top-0 z-50 border-b transition-[background-color,border-color,box-shadow] duration-200',
+          scrolled || mobileOpen
+            ? 'border-line-subtle bg-base/90 shadow-[0_1px_0_rgba(245,247,242,0.02)] backdrop-blur-xl'
+            : 'border-line-subtle/70 bg-base/70 backdrop-blur-md',
+        )}
+      >
+        <div className="container-page">
+          <div className="flex h-16 items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-7">
+              <BrandHomeLink compact />
+              <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
+                {NAV_LINKS.map((link) => {
+                  const active = link.match(pathname);
+                  return (
+                    <Link
+                      key={link.to}
+                      to={link.to}
+                      aria-current={active ? 'page' : undefined}
+                      className="nav-link"
+                    >
+                      {link.label}
+                      {active ? (
+                        <motion.span
+                          layoutId="primary-nav-underline"
+                          aria-hidden="true"
+                          className="absolute inset-x-0 -bottom-px h-[1.5px] rounded-full bg-lime"
+                          transition={
+                            reduceMotion
+                              ? { duration: 0 }
+                              : { type: 'spring', stiffness: 520, damping: 42, mass: 0.6 }
+                          }
+                        />
+                      ) : null}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
 
-          <div className="flex shrink-0 items-center gap-1.5">
-            <button
-              type="button"
-              onClick={openPalette}
-              aria-label="Search the support center"
-              className="flex size-11 items-center justify-center gap-2 rounded-lg border border-transparent text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:h-9 sm:w-auto sm:px-2.5"
-            >
-              <Search aria-hidden="true" className="size-3.5" />
-              <span className="hidden md:inline">Search</span>
-              <kbd className="ml-0.5 hidden rounded border border-line bg-raised px-1.5 py-0.5 font-sans text-[9.5px] text-faint md:inline-flex">
-                {shortcut}
-              </kbd>
-            </button>
-
-            <span aria-hidden="true" className="mx-1 hidden h-4 w-px bg-line sm:block" />
-
-            <Link
-              to="/submit"
-              className={buttonClasses({ size: 'sm', className: 'hidden sm:inline-flex' })}
-            >
-              <Plus aria-hidden="true" className="size-3.5" />
-              Submit a request
-            </Link>
-
-            <a
-              href={RIZZ_SITE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={buttonClasses({
-                variant: 'ghost',
-                size: 'sm',
-                className: 'hidden lg:inline-flex',
-              })}
-            >
-              Back to Rizz
-              <ArrowUpRight aria-hidden="true" className="size-3.5" />
-            </a>
-
-            <button
-              ref={toggleRef}
-              type="button"
-              onClick={() => setMobileOpen((current) => !current)}
-              aria-expanded={mobileOpen}
-              aria-controls="mobile-menu"
-              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              className="flex size-11 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-ink transition-colors hover:border-line-strong hover:bg-white/[0.04] lg:hidden"
-            >
-              {mobileOpen ? <X className="size-4.5" /> : <Menu className="size-4.5" />}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>
-        {mobileOpen ? (
-        <motion.div
-          ref={drawerRef}
-          id="mobile-menu"
-          initial={reduceMotion ? false : { opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
-          transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36, mass: 0.8 }}
-          className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto border-t border-line-subtle bg-base lg:hidden"
-        >
-          <div className="container-page flex min-h-full flex-col py-6">
-            <p className="eyebrow-plain">Navigate</p>
-            <nav aria-label="Mobile" className="mt-3 divide-y divide-line-subtle border-y border-line-subtle">
-              {NAV_LINKS.map((link, index) => {
-                const active = link.match(pathname);
-                return (
-                  <Link
-                    key={link.to}
-                    ref={index === 0 ? firstLinkRef : undefined}
-                    to={link.to}
-                    aria-current={active ? 'page' : undefined}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      'flex min-h-14 items-center justify-between gap-4 py-3.5 text-[15px] font-medium tracking-[-0.015em] transition-colors',
-                      active ? 'text-lime' : 'text-ink hover:text-lime',
-                    )}
-                  >
-                    {link.label}
-                    <ArrowRight
-                      aria-hidden="true"
-                      className={cn('size-4', active ? 'text-lime' : 'text-faint')}
-                    />
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="mt-6 grid gap-2">
+            <div className="flex shrink-0 items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => {
                   setMobileOpen(false);
                   openPalette();
                 }}
-                className={buttonClasses({ variant: 'secondary', size: 'md', className: 'w-full' })}
+                aria-haspopup="dialog"
+                aria-label="Search the support center"
+                className="flex size-11 items-center justify-center gap-2 rounded-lg border border-transparent text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:h-9 sm:min-w-11 sm:w-auto sm:px-2.5"
               >
-                <Search aria-hidden="true" className="size-4" />
-                Search help
+                <Search aria-hidden="true" className="size-3.5" />
+                <span className="hidden md:inline">Search</span>
+                <kbd className="ml-0.5 hidden rounded border border-line bg-raised px-1.5 py-0.5 font-sans text-[9.5px] text-faint md:inline-flex">
+                  {shortcut}
+                </kbd>
               </button>
+
+              <span aria-hidden="true" className="mx-1 hidden h-4 w-px bg-line sm:block" />
+
               <Link
                 to="/submit"
-                onClick={() => setMobileOpen(false)}
-                className={buttonClasses({ size: 'lg', className: 'w-full' })}
+                className={buttonClasses({ size: 'sm', className: 'hidden sm:inline-flex' })}
               >
-                Submit a support request
-                <ArrowRight aria-hidden="true" className="size-4" />
+                <Plus aria-hidden="true" className="size-3.5" />
+                Submit a request
               </Link>
+
               <a
                 href={RIZZ_SITE_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className={buttonClasses({ variant: 'ghost', size: 'md', className: 'w-full justify-between' })}
+                className={buttonClasses({
+                  variant: 'ghost',
+                  size: 'sm',
+                  className: 'hidden lg:inline-flex',
+                })}
               >
                 Back to Rizz
-                <ArrowUpRight aria-hidden="true" className="size-4" />
+                <ArrowUpRight aria-hidden="true" className="size-3.5" />
               </a>
-            </div>
 
-            <p className="mt-auto pt-8 text-[11px] leading-relaxed text-faint">
-              Help articles, answers, and real request tracking for Rizz.
-            </p>
+              <button
+                ref={toggleRef}
+                type="button"
+                onClick={() => setMobileOpen((current) => !current)}
+                aria-expanded={mobileOpen}
+                aria-controls={mobileOpen ? 'mobile-menu' : undefined}
+                aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+                className="flex size-11 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-ink transition-colors hover:border-line-strong hover:bg-white/[0.04] lg:hidden"
+              >
+                {mobileOpen ? <X className="size-4.5" /> : <Menu className="size-4.5" />}
+              </button>
+            </div>
           </div>
-        </motion.div>
-      ) : null}
-      </AnimatePresence>
-    </header>
+        </div>
+      </header>
+
+      {/* Rendered outside the header and the clipped page shell: the header's
+          backdrop-filter would otherwise become the fixed drawer's containing
+          block, and the layout's overflow clip could cut it off. */}
+      {typeof document !== 'undefined'
+        ? createPortal(
+            <AnimatePresence>
+              {mobileOpen ? (
+                <motion.div
+                  ref={drawerRef}
+                  id="mobile-menu"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Mobile navigation"
+                  initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+                  transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36, mass: 0.8 }}
+                  className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto overscroll-contain border-t border-line-subtle bg-base shadow-pop lg:hidden"
+                >
+                  <div className="container-page flex min-h-full flex-col py-6">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="eyebrow-plain">Navigate</p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          toggleRef.current?.focus();
+                        }}
+                        aria-label="Close menu"
+                        className="flex size-11 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-muted transition-colors hover:border-line-strong hover:text-ink"
+                      >
+                        <X aria-hidden="true" className="size-4" />
+                      </button>
+                    </div>
+                    <nav aria-label="Mobile" className="mt-3 divide-y divide-line-subtle border-y border-line-subtle">
+                      {NAV_LINKS.map((link, index) => {
+                        const active = link.match(pathname);
+                        return (
+                          <Link
+                            key={link.to}
+                            ref={index === 0 ? firstLinkRef : undefined}
+                            to={link.to}
+                            aria-current={active ? 'page' : undefined}
+                            onClick={() => setMobileOpen(false)}
+                            className={cn(
+                              'flex min-h-14 items-center justify-between gap-4 py-3.5 text-[15px] font-medium tracking-[-0.015em] transition-colors',
+                              active ? 'text-lime' : 'text-ink hover:text-lime',
+                            )}
+                          >
+                            {link.label}
+                            <ArrowRight
+                              aria-hidden="true"
+                              className={cn('size-4', active ? 'text-lime' : 'text-faint')}
+                            />
+                          </Link>
+                        );
+                      })}
+                    </nav>
+
+                    <div className="mt-6 grid gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMobileOpen(false);
+                          openPalette();
+                        }}
+                        aria-haspopup="dialog"
+                        className={buttonClasses({ variant: 'secondary', size: 'md', className: 'w-full' })}
+                      >
+                        <Search aria-hidden="true" className="size-4" />
+                        Search help
+                      </button>
+                      <Link
+                        to="/submit"
+                        onClick={() => setMobileOpen(false)}
+                        className={buttonClasses({ size: 'lg', className: 'w-full' })}
+                      >
+                        Submit a support request
+                        <ArrowRight aria-hidden="true" className="size-4" />
+                      </Link>
+                      <a
+                        href={RIZZ_SITE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setMobileOpen(false)}
+                        className={buttonClasses({ variant: 'ghost', size: 'md', className: 'w-full justify-between' })}
+                      >
+                        Back to Rizz
+                        <ArrowUpRight aria-hidden="true" className="size-4" />
+                      </a>
+                    </div>
+
+                    <p className="mt-auto pt-8 text-[11px] leading-relaxed text-faint">
+                      Help articles, answers, and real request tracking for Rizz.
+                    </p>
+                  </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
+    </>
   );
 }

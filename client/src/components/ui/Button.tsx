@@ -24,8 +24,8 @@ const VARIANT_CLASSES: Record<ButtonVariant, string> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3.5 text-[12.5px] gap-1.5 rounded-lg',
-  md: 'h-10 px-4 text-[13px] gap-2 rounded-[10px]',
+  sm: 'h-9 min-h-11 px-3.5 text-[12.5px] gap-1.5 rounded-lg sm:min-h-0',
+  md: 'h-10 min-h-11 px-4 text-[13px] gap-2 rounded-[10px] sm:min-h-0',
   lg: 'h-11 px-5 text-[13.5px] gap-2 rounded-xl',
 };
 

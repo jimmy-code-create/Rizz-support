@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import {
   ArrowRight,
   ArrowUpRight,
+  Compass,
   CornerDownLeft,
   FileText,
   HelpCircle,
@@ -54,6 +55,7 @@ const KIND_ICON: Record<SearchKind, typeof FileText> = {
   article: FileText,
   faq: HelpCircle,
   category: LayoutGrid,
+  page: Compass,
 };
 
 const VARIANT_FRAME: Record<SearchVariant, string> = {
@@ -97,7 +99,8 @@ export function SearchBox({
   const hits = useMemo(() => flattenHits(groups), [groups]);
   const hasQuery = query.trim().length > 0;
   const showPanel = open;
-  const showInlinePopular = showPopular && !hasQuery;
+  const modal = variant === 'modal';
+  const showInlinePopular = showPopular && !hasQuery && !modal;
 
   useEffect(() => {
     setActiveIndex(-1);
@@ -121,24 +124,36 @@ export function SearchBox({
     const viewportWidth = viewport?.width ?? window.innerWidth;
     const viewportHeight = viewport?.height ?? window.innerHeight;
     const viewportTop = viewport?.offsetTop ?? 0;
+    const headerHeight =
+      document.querySelector('header')?.getBoundingClientRect().height || HEADER_OFFSET;
+
+    // Inside the command palette the results belong in the dialog's normal
+    // flow. A second fixed overlay drifts outside the dialog and covers its
+    // footer, so modal search only needs a sensible scroll height.
+    if (modal) {
+      setPosition({
+        top: 0,
+        left: 0,
+        width: Math.round(Math.max(rect.width, viewportWidth - VIEWPORT_MARGIN * 2)),
+        maxHeight: Math.round(Math.max(180, Math.min(420, viewportHeight * 0.52))),
+      });
+      return;
+    }
+
     const width = Math.min(Math.max(rect.width, 300), viewportWidth - VIEWPORT_MARGIN * 2);
     const left = Math.min(
       Math.max(rect.left, VIEWPORT_MARGIN),
       Math.max(VIEWPORT_MARGIN, viewportWidth - width - VIEWPORT_MARGIN),
     );
     const hasLayout = rect.width > 0 || rect.height > 0;
-    if (
-      hasLayout &&
-      (rect.bottom < HEADER_OFFSET + 4 ||
-        rect.top > (viewport?.offsetTop ?? 0) + (viewport?.height ?? window.innerHeight))
-    ) {
+    const minTop = viewportTop + headerHeight + 8;
+    if (hasLayout && (rect.bottom < minTop + 4 || rect.top > viewportTop + viewportHeight)) {
       close();
       return;
     }
 
     const belowTop = rect.bottom + 8;
     const belowSpace = viewportTop + viewportHeight - belowTop - VIEWPORT_MARGIN;
-    const minTop = viewportTop + HEADER_OFFSET + 8;
     const aboveSpace = rect.top - minTop - 8;
 
     let top = belowTop;
@@ -162,24 +177,24 @@ export function SearchBox({
       width: Math.round(width),
       maxHeight: Math.round(Math.max(0, Math.min(430, maxHeight))),
     });
-  }, [close]);
+  }, [close, modal]);
 
   useLayoutEffect(() => {
     if (!showPanel) return;
     updatePosition();
     const frame = window.requestAnimationFrame(updatePosition);
     window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition, true);
+    if (!modal) window.addEventListener('scroll', updatePosition, true);
     window.visualViewport?.addEventListener('resize', updatePosition);
     window.visualViewport?.addEventListener('scroll', updatePosition);
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
+      if (!modal) window.removeEventListener('scroll', updatePosition, true);
       window.visualViewport?.removeEventListener('resize', updatePosition);
       window.visualViewport?.removeEventListener('scroll', updatePosition);
     };
-  }, [showPanel, updatePosition]);
+  }, [showPanel, updatePosition, modal]);
 
   useEffect(() => {
     if (!showPanel) return;
@@ -188,9 +203,29 @@ export function SearchBox({
       if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) return;
       close();
     };
+    // Focus can move without a pointerdown (Tab, screen-reader navigation).
+    // A blur handler on the field was closing the panel before portal links
+    // could receive focus; focusin on the document is the reliable signal.
+    const onFocusIn = (event: FocusEvent) => {
+      const target = event.target as Node | null;
+      if (!target) return;
+      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) return;
+      close();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || modal) return;
+      event.preventDefault();
+      close();
+    };
     document.addEventListener('pointerdown', onPointerDown, true);
-    return () => document.removeEventListener('pointerdown', onPointerDown, true);
-  }, [showPanel, close]);
+    document.addEventListener('focusin', onFocusIn);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown, true);
+      document.removeEventListener('focusin', onFocusIn);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [showPanel, modal, close]);
 
   const goToHit = (hit: SearchHit) => {
     close();
@@ -246,16 +281,22 @@ export function SearchBox({
     inputRef.current?.focus();
   };
 
+  useEffect(() => {
+    if (!showPanel || activeIndex < 0) return;
+    const option = document.getElementById(`${listboxId}-option-${activeIndex}`);
+    option?.scrollIntoView({ block: 'nearest' });
+  }, [activeIndex, showPanel, listboxId]);
+
   const activeOptionId = activeIndex >= 0 ? `${listboxId}-option-${activeIndex}` : undefined;
-  const modal = variant === 'modal';
 
   const panel =
     position && showPanel ? (
       <motion.div
         ref={panelRef}
+        key="search-panel"
         id={panelId}
         role="region"
-        aria-label="Search suggestions"
+        aria-label={hasQuery ? 'Search results panel' : 'Search suggestions'}
         initial={reduceMotion ? false : { opacity: 0, y: -6, scale: 0.995 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.995 }}
@@ -264,26 +305,46 @@ export function SearchBox({
             ? { duration: 0 }
             : { type: 'spring', stiffness: 430, damping: 34, mass: 0.7 }
         }
-        style={{
-          position: 'fixed',
-          top: position.top,
-          left: position.left,
-          width: position.width,
-          maxHeight: position.maxHeight,
-          zIndex: modal ? 95 : 45,
-        }}
-        className="flex flex-col overflow-hidden rounded-xl border border-line-strong bg-surface shadow-pop"
+        style={
+          modal
+            ? { maxHeight: position.maxHeight }
+            : {
+                position: 'fixed',
+                top: position.top,
+                left: position.left,
+                width: position.width,
+                maxHeight: position.maxHeight,
+                zIndex: 45,
+              }
+        }
+        className={cn(
+          'flex flex-col overflow-hidden rounded-xl border border-line-strong bg-surface',
+          modal ? 'relative mt-3 w-full' : 'fixed shadow-pop',
+        )}
         data-search-panel
       >
         {hasQuery ? (
           <>
-            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line-subtle px-3.5 py-2.5">
-              <p className="min-w-0 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-faint">
+            <div className="flex shrink-0 items-center gap-2 border-b border-line-subtle px-3.5 py-2">
+              <p className="min-w-0 flex-1 truncate text-[10px] font-medium uppercase tracking-[0.14em] text-faint">
                 Results for <span className="text-muted">“{query.trim()}”</span>
               </p>
-              <span className="shrink-0 text-[10px] tabular-nums text-faint">
-                {hits.length} {hits.length === 1 ? 'match' : 'matches'}
+              <span
+                className="shrink-0 text-[10px] tabular-nums text-faint"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {hits.length} {hits.length === 1 ? 'result' : 'results'}
               </span>
+              <button
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={close}
+                aria-label="Close search results"
+                className="-my-1 -mr-1.5 flex size-11 shrink-0 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink sm:size-8"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
             </div>
 
             {hits.length > 0 ? (
@@ -292,7 +353,7 @@ export function SearchBox({
                   id={listboxId}
                   role="listbox"
                   aria-label="Search results"
-                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2"
+                  className="min-h-0 flex-1 animate-result-in overflow-y-auto overscroll-contain p-2"
                 >
                   {groups.map((group) => {
                     let runningIndex = 0;
@@ -380,15 +441,15 @@ export function SearchBox({
                       close();
                       onNavigate?.();
                     }}
-                    className="inline-flex items-center gap-1 text-[11px] font-medium text-lime transition-colors hover:text-lime-deep"
+                    className="inline-flex min-h-11 items-center gap-1 text-[11px] font-medium text-lime transition-colors hover:text-lime-deep sm:min-h-9"
                   >
-                    See all results
+                    Search all help articles
                     <ArrowRight aria-hidden="true" className="size-3" />
                   </Link>
                 </div>
               </>
             ) : (
-              <div className="min-h-0 overflow-y-auto px-5 py-6">
+              <div className="min-h-0 animate-result-in overflow-y-auto px-5 py-6">
                 <p className="text-[13px] font-medium text-ink">No results for “{query.trim()}”</p>
                 <p className="mt-1.5 max-w-[42ch] text-[12px] leading-relaxed text-muted">
                   Try a shorter phrase, browse the FAQs, or send the details to support and we will
@@ -402,7 +463,7 @@ export function SearchBox({
                       close();
                       onNavigate?.();
                     }}
-                    className="inline-flex h-9 items-center rounded-lg bg-lime px-3 text-[11.5px] font-medium text-[#0A0E08] transition-colors hover:bg-lime-deep active:bg-[#9bea26]"
+                    className="inline-flex h-11 items-center rounded-lg bg-lime px-3 text-[11.5px] font-medium text-[#0A0E08] transition-colors hover:bg-lime-deep active:bg-[#9bea26] sm:h-9"
                   >
                     Submit a request
                     <ArrowRight aria-hidden="true" className="ml-1.5 size-3" />
@@ -414,7 +475,7 @@ export function SearchBox({
                       close();
                       onNavigate?.();
                     }}
-                    className="inline-flex h-9 items-center rounded-lg border border-line-strong bg-raised/60 px-3 text-[11.5px] font-medium text-ink transition-colors hover:bg-raised active:bg-elevated"
+                    className="inline-flex h-11 items-center rounded-lg border border-line-strong bg-raised/60 px-3 text-[11.5px] font-medium text-ink transition-colors hover:bg-raised active:bg-elevated sm:h-9"
                   >
                     Browse FAQs
                   </Link>
@@ -423,10 +484,21 @@ export function SearchBox({
             )}
           </>
         ) : (
-          <div className="min-h-0 overflow-y-auto p-3.5 sm:p-4">
-            <p className="text-[9.5px] font-medium uppercase tracking-[0.16em] text-faint">
-              Popular searches
-            </p>
+          <div className="min-h-0 animate-result-in overflow-y-auto p-3.5 sm:p-4">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[9.5px] font-medium uppercase tracking-[0.16em] text-faint">
+                Search suggestions
+              </p>
+              <button
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={close}
+                aria-label="Close search suggestions"
+                className="-my-1 -mr-1.5 flex size-11 shrink-0 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink sm:size-8"
+              >
+                <X aria-hidden="true" className="size-4" />
+              </button>
+            </div>
             <div className="mt-2.5 flex flex-wrap gap-2">
               {POPULAR_SEARCHES.map((entry) => (
                 <button
@@ -434,7 +506,7 @@ export function SearchBox({
                   type="button"
                   onMouseDown={(event) => event.preventDefault()}
                   onClick={() => runPopularSearch(entry.query)}
-                  className="inline-flex min-h-10 items-center gap-1.5 rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-colors hover:border-line-strong hover:bg-white/[0.04] hover:text-ink"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-colors hover:border-line-strong hover:bg-white/[0.04] hover:text-ink sm:min-h-10"
                 >
                   {entry.label}
                   <ArrowUpRight aria-hidden="true" className="size-3 text-faint" />
@@ -454,7 +526,7 @@ export function SearchBox({
                     close();
                     onNavigate?.();
                   }}
-                  className="flex min-h-10 items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-[12.5px] text-ink transition-colors hover:bg-white/[0.04]"
+                  className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-[12.5px] text-ink transition-colors hover:bg-white/[0.04] sm:min-h-10"
                 >
                   All help articles
                   <ArrowRight aria-hidden="true" className="size-3.5 text-faint" />
@@ -466,7 +538,7 @@ export function SearchBox({
                     close();
                     onNavigate?.();
                   }}
-                  className="flex min-h-10 items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-[12.5px] text-ink transition-colors hover:bg-white/[0.04]"
+                  className="flex min-h-11 items-center justify-between gap-3 rounded-lg px-2.5 py-2 text-[12.5px] text-ink transition-colors hover:bg-white/[0.04] sm:min-h-10"
                 >
                   Frequently asked questions
                   <ArrowRight aria-hidden="true" className="size-3.5 text-faint" />
@@ -486,12 +558,10 @@ export function SearchBox({
     <div
       ref={rootRef}
       className={cn('relative w-full', className)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
-      }}
     >
       <form
         role="search"
+        aria-label={modal ? 'Support center command search' : 'Support center search'}
         onSubmit={(event) => {
           event.preventDefault();
           const hit = activeIndex >= 0 ? hits[activeIndex] : undefined;
@@ -549,7 +619,7 @@ export function SearchBox({
                 inputRef.current?.focus();
               }}
               aria-label="Clear search"
-              className="flex size-9 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
+              className="flex size-11 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink sm:size-9"
             >
               <X className="size-4" />
             </button>
@@ -564,12 +634,11 @@ export function SearchBox({
         </span>
       </form>
 
-      {typeof document !== 'undefined'
-        ? createPortal(
-            <AnimatePresence>{panel}</AnimatePresence>,
-            document.body,
-          )
-        : null}
+      {modal ? (
+        <AnimatePresence>{panel}</AnimatePresence>
+      ) : typeof document !== 'undefined' ? (
+        createPortal(<AnimatePresence>{panel}</AnimatePresence>, document.body)
+      ) : null}
 
       {showInlinePopular ? (
         <div className={cn('mt-4 flex flex-wrap items-center gap-2', showPanel && 'invisible')}>
@@ -579,7 +648,7 @@ export function SearchBox({
               key={entry.label}
               type="button"
               onClick={() => runPopularSearch(entry.query)}
-              className="rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-[color,border-color,background-color] duration-150 hover:border-line-strong hover:bg-white/[0.04] hover:text-ink"
+              className="inline-flex min-h-11 items-center rounded-full border border-line bg-white/[0.02] px-3 py-2 text-[11.5px] text-muted transition-[color,border-color,background-color] duration-150 hover:border-line-strong hover:bg-white/[0.04] hover:text-ink sm:min-h-10"
             >
               {entry.label}
             </button>

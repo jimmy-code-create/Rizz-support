@@ -72,7 +72,7 @@ export function Hero() {
           <aside aria-label="Quick support paths" className="animate-fade-up lg:justify-self-end lg:w-full" style={{ animationDelay: '90ms' }}>
             <div className="overflow-hidden rounded-panel border border-line-subtle bg-gradient-to-b from-[#121712] to-[#0c100c] shadow-card">
               <div className="flex items-center justify-between gap-4 border-b border-line-subtle px-4 py-3.5">
-                <p className="text-[12px] font-medium tracking-[-0.005em] text-ink">Start here</p>
+                <h2 className="text-[12px] font-medium tracking-[-0.005em] text-ink">Start here</h2>
                 <p className="text-[10px] uppercase tracking-[0.14em] text-faint">Self-serve</p>
               </div>
 

@@ -139,7 +139,7 @@ export function NewIssuePage() {
       >
         <Link
           to="/issues"
-          className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-ink"
+          className="inline-flex min-h-11 items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-ink sm:min-h-9"
         >
           <ArrowLeft aria-hidden="true" className="size-3.5" />
           Back to the issue board
@@ -153,12 +153,12 @@ export function NewIssuePage() {
             tabIndex={-1}
             noValidate
             onSubmit={(event) => void handleSubmit(event)}
-            className="min-w-0 rounded-panel border border-line-subtle bg-card p-5 shadow-card focus:outline-none sm:p-7"
+            className="relative min-w-0 rounded-panel border border-line-subtle bg-card p-5 shadow-card focus:outline-none sm:p-7"
           >
             {errorCount > 0 || serverError ? (
               <div
                 role="alert"
-                className="mb-6 rounded-xl border border-error/25 bg-error/[0.06] p-4 text-[12px] leading-relaxed text-error"
+                className="animate-result-in mb-6 rounded-xl border border-error/25 bg-error/[0.06] p-4 text-[12px] leading-relaxed text-error"
               >
                 {serverError ??
                   `Please check the ${errorCount === 1 ? 'highlighted field' : `${errorCount} highlighted fields`} and try again.`}
@@ -242,12 +242,12 @@ export function NewIssuePage() {
             </p>
           </form>
 
-          <aside className="space-y-3 lg:sticky lg:top-24">
+          <aside className="space-y-3 lg:sticky lg:top-28">
             <div className="rounded-card border border-line-subtle bg-surface/60 p-5">
-              <p className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
+              <h2 className="flex items-center gap-2 text-[12.5px] font-medium text-ink">
                 <ShieldAlert aria-hidden="true" className="size-4 text-warning" />
                 Keep it public-safe
-              </p>
+              </h2>
               <p className="mt-2 text-[11.5px] leading-[1.7] text-muted">
                 Do not include your email, password, ticket reference, or anything private about
                 your account. The public board does not support private replies.
@@ -264,7 +264,7 @@ export function NewIssuePage() {
             </div>
 
             <div className="rounded-card border border-line-subtle bg-card p-5">
-              <p className="text-[12.5px] font-medium text-ink">What happens next</p>
+              <h2 className="text-[12.5px] font-medium text-ink">What happens next</h2>
               <p className="mt-2 text-[11.5px] leading-[1.7] text-muted">
                 Your report appears on the issue board immediately. Other visitors can upvote it
                 if they are experiencing the same problem.

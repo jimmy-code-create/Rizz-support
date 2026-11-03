@@ -118,7 +118,7 @@ export function FaqsPage() {
                 type="button"
                 onClick={() => setQuery('')}
                 aria-label="Clear search"
-                className="absolute right-2 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
+                className="absolute right-1.5 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
               >
                 <X aria-hidden="true" className="size-4" />
               </button>
@@ -169,7 +169,7 @@ export function FaqsPage() {
                   setQuery('');
                   setCategory('all');
                 }}
-                className="inline-flex items-center gap-1 text-[11.5px] font-medium text-muted transition-colors hover:text-lime"
+                className="inline-flex min-h-11 items-center gap-1 text-[11.5px] font-medium text-muted transition-colors hover:text-lime sm:min-h-9"
               >
                 <X aria-hidden="true" className="size-3" />
                 Reset filters

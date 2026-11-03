@@ -8,7 +8,7 @@ import {
   type KeyboardEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { MoreHorizontal, type LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/cn';
@@ -35,7 +35,7 @@ interface MenuPosition {
   maxHeight: number;
 }
 
-const MENU_WIDTH = 216;
+const MENU_WIDTH = 248;
 const MENU_GAP = 6;
 const VIEWPORT_MARGIN = 8;
 const HEADER_OFFSET = 72;
@@ -49,11 +49,13 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
   const itemRefs = useRef<Array<HTMLElement | null>>([]);
   const shouldFocusRef = useRef(false);
   const menuId = useId();
+  const { pathname } = useLocation();
 
   const close = useCallback((restoreFocus = false) => {
     shouldFocusRef.current = false;
     setOpen(false);
-    setPosition(null);
+    // Keep the measured position while the exit animation plays; the trigger
+    // clears it before the next open.
     if (restoreFocus) {
       window.requestAnimationFrame(() => triggerRef.current?.focus());
     }
@@ -108,13 +110,23 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
     };
     window.addEventListener('resize', onResize);
     window.addEventListener('scroll', onScroll, true);
+    // Android Chrome reports keyboard/viewport changes on visualViewport, not
+    // always as window resize events.
+    window.visualViewport?.addEventListener('resize', onResize);
+    window.visualViewport?.addEventListener('scroll', onResize);
 
     return () => {
       window.cancelAnimationFrame(frame);
       window.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', onScroll, true);
+      window.visualViewport?.removeEventListener('resize', onResize);
+      window.visualViewport?.removeEventListener('scroll', onResize);
     };
   }, [open, updatePosition, close]);
+
+  useEffect(() => {
+    close(false);
+  }, [pathname, close]);
 
   useLayoutEffect(() => {
     if (!open || !position || !shouldFocusRef.current) return;
@@ -182,7 +194,6 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
   const runAction = (item: ActionMenuItem) => {
     shouldFocusRef.current = false;
     setOpen(false);
-    setPosition(null);
     window.requestAnimationFrame(() => triggerRef.current?.focus());
     if (item.onSelect) void item.onSelect();
   };
@@ -213,7 +224,7 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
           }
         }}
         className={cn(
-          'flex size-9 items-center justify-center rounded-lg border border-transparent text-faint transition-colors hover:border-line hover:bg-white/[0.04] hover:text-ink',
+          'flex size-11 items-center justify-center rounded-lg border border-transparent text-faint transition-colors hover:border-line hover:bg-white/[0.04] hover:text-ink active:bg-white/[0.07] sm:size-9',
           open && 'border-line bg-white/[0.04] text-ink',
           className,
         )}
@@ -225,9 +236,10 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
         ? createPortal(
             <AnimatePresence>
               {open ? (
-                <div role="region" aria-label="Issue actions">
+                <div role="region" aria-label="Actions">
                   <motion.div
                     ref={menuRef}
+                    key="action-menu"
                     id={menuId}
                     role="menu"
                     aria-label={`${label} menu`}
@@ -254,7 +266,7 @@ export function ActionMenu({ label, items, className }: ActionMenuProps) {
                     {items.map((item, index) => {
                       const Icon = item.icon;
                       const itemClass = cn(
-                        'flex min-h-10 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[12.5px] transition-colors focus:bg-white/[0.06] focus:outline-none',
+                        'flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 text-left text-[12.5px] leading-snug transition-colors focus:bg-white/[0.06] sm:min-h-10',
                         item.tone === 'danger'
                           ? 'text-error hover:bg-error/[0.08]'
                           : 'text-ink hover:bg-white/[0.05]',

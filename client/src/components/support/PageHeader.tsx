@@ -36,7 +36,7 @@ export function PageHeader({
                 return (
                   <li key={`${crumb.label}-${index}`} className="flex min-w-0 items-center gap-1.5">
                     {crumb.to && !last ? (
-                      <Link to={crumb.to} className="transition-colors hover:text-ink">
+                      <Link to={crumb.to} className="inline-flex min-h-11 items-center transition-colors hover:text-ink sm:min-h-0">
                         {crumb.label}
                       </Link>
                     ) : (
