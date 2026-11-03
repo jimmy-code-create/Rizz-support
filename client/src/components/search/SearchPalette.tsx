@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { Search, X } from 'lucide-react';
 import { SearchBox } from '@/components/search/SearchBox';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 interface PaletteContextValue {
   openPalette: () => void;
@@ -26,6 +28,7 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
 
   const openPalette = useCallback(() => {
     restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -95,58 +98,75 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   return (
     <PaletteContext.Provider value={value}>
       {children}
-      {open
+      {typeof document !== 'undefined'
         ? createPortal(
-            <div
-              className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-black/70 px-4 pb-8 pt-[10vh] backdrop-blur-[6px] sm:pt-[14vh]"
-              onMouseDown={(event) => {
-                if (event.target === event.currentTarget) closePalette();
-              }}
-            >
-              <div
-                ref={panelRef}
-                role="dialog"
-                aria-modal="true"
-                aria-label="Search the Rizz Support Center"
-                className="animate-scale-in w-full max-w-2xl overflow-hidden rounded-panel border border-line-strong bg-base shadow-pop"
-              >
-                <div className="flex items-center justify-between border-b border-line-subtle px-4 py-3 sm:px-5">
-                  <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-moss-soft">
-                    <Search aria-hidden="true" className="size-3.5" />
-                    Search support
-                  </div>
-                  <button
-                    type="button"
-                    onClick={closePalette}
-                    aria-label="Close search"
-                    className="flex items-center gap-1.5 rounded-md border border-line bg-white/[0.02] px-2 py-1 text-[10px] text-muted transition-colors hover:text-ink"
+            <AnimatePresence>
+              {open ? (
+                <motion.div
+                  key="search-palette"
+                  initial={reduceMotion ? false : { opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.18 }}
+                  className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-black/70 px-4 pb-8 pt-[10vh] backdrop-blur-[6px] sm:pt-[14vh]"
+                  onMouseDown={(event) => {
+                    if (event.target === event.currentTarget) closePalette();
+                  }}
+                >
+                  <motion.div
+                    ref={panelRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Search the Rizz Support Center"
+                    initial={reduceMotion ? false : { opacity: 0, y: -10, scale: 0.99 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.995 }}
+                    transition={
+                      reduceMotion
+                        ? { duration: 0 }
+                        : { type: 'spring', stiffness: 410, damping: 34, mass: 0.75 }
+                    }
+                    className="w-full max-w-2xl overflow-hidden rounded-panel border border-line-strong bg-base shadow-pop"
                   >
-                    <X aria-hidden="true" className="size-3" />
-                    Esc
-                  </button>
-                </div>
-                <div className="p-4 sm:p-5">
-                  <SearchBox
-                    variant="modal"
-                    autoFocus
-                    showPopular
-                    onNavigate={closePalette}
-                    inputLabel="Search the support center"
-                  />
-                </div>
-                <div className="flex items-center justify-between gap-3 border-t border-line-subtle bg-black/20 px-4 py-2.5 text-[10.5px] text-faint sm:px-5">
-                  <span className="flex items-center gap-1.5">
-                    <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↑</kbd>
-                    <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↓</kbd>
-                    to navigate
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↵</kbd>
-                    to open
-                  </span>
-                </div>
-              </div>
-            </div>,
+                    <div className="flex items-center justify-between border-b border-line-subtle px-4 py-3 sm:px-5">
+                      <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-moss-soft">
+                        <Search aria-hidden="true" className="size-3.5" />
+                        Search support
+                      </div>
+                      <button
+                        type="button"
+                        onClick={closePalette}
+                        aria-label="Close search"
+                        className="flex min-h-9 items-center gap-1.5 rounded-md border border-line bg-white/[0.02] px-2.5 text-[10px] text-muted transition-colors hover:border-line-strong hover:text-ink"
+                      >
+                        <X aria-hidden="true" className="size-3" />
+                        Esc
+                      </button>
+                    </div>
+                    <div className="p-4 sm:p-5">
+                      <SearchBox
+                        variant="modal"
+                        autoFocus
+                        showPopular
+                        onNavigate={closePalette}
+                        inputLabel="Search the support center"
+                      />
+                    </div>
+                    <div className="flex items-center justify-between gap-3 border-t border-line-subtle bg-black/20 px-4 py-2.5 text-[10.5px] text-faint sm:px-5">
+                      <span className="flex items-center gap-1.5">
+                        <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↑</kbd>
+                        <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↓</kbd>
+                        to navigate
+                      </span>
+                      <span className="flex items-center gap-1.5">
+                        <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↵</kbd>
+                        to open
+                      </span>
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>,
             document.body,
           )
         : null}

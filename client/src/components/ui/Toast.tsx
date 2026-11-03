@@ -1,7 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { CheckCircle2, Info, X, XCircle } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 type ToastTone = 'success' | 'error' | 'info';
 
@@ -33,6 +35,7 @@ const TONE_CLASSES: Record<ToastTone, string> = {
 function ToastCard({ item, onDismiss }: { item: ToastItemData; onDismiss: (id: string) => void }) {
   const Icon = ICONS[item.tone];
   const timer = useRef<number | null>(null);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     timer.current = window.setTimeout(() => onDismiss(item.id), 5000);
@@ -42,8 +45,13 @@ function ToastCard({ item, onDismiss }: { item: ToastItemData; onDismiss: (id: s
   }, [item.id, onDismiss]);
 
   return (
-    <div
-      className="animate-scale-in pointer-events-auto flex w-full items-start gap-3 rounded-card border border-line-strong bg-card/95 p-4 shadow-pop backdrop-blur-md"
+    <motion.div
+      layout={!reduceMotion}
+      initial={reduceMotion ? false : { opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.98 }}
+      transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 32, mass: 0.7 }}
+      className="pointer-events-auto flex w-full items-start gap-3 rounded-card border border-line-strong bg-card/95 p-4 shadow-pop backdrop-blur-md"
       role="status"
     >
       <Icon aria-hidden="true" className={cn('mt-0.5 size-[18px] shrink-0', TONE_CLASSES[item.tone])} />
@@ -57,11 +65,11 @@ function ToastCard({ item, onDismiss }: { item: ToastItemData; onDismiss: (id: s
         type="button"
         onClick={() => onDismiss(item.id)}
         aria-label="Dismiss notification"
-        className="-m-1 rounded-md p-1 text-muted transition-colors hover:bg-white/5 hover:text-ink"
+        className="-m-1.5 flex size-9 items-center justify-center rounded-md text-muted transition-colors hover:bg-white/5 hover:text-ink"
       >
         <X className="size-3.5" />
       </button>
-    </div>
+    </motion.div>
   );
 }
 
@@ -90,9 +98,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               aria-live="polite"
               className="pointer-events-none fixed inset-x-4 bottom-4 z-[80] flex flex-col items-end gap-2 sm:inset-x-auto sm:bottom-6 sm:right-6 sm:w-[360px]"
             >
-              {items.map((item) => (
-                <ToastCard key={item.id} item={item} onDismiss={dismiss} />
-              ))}
+              <AnimatePresence initial={false}>
+                {items.map((item) => (
+                  <ToastCard key={item.id} item={item} onDismiss={dismiss} />
+                ))}
+              </AnimatePresence>
             </div>,
             document.body,
           )

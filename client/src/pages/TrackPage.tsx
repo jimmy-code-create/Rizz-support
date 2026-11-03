@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   ArrowRight,
@@ -31,6 +32,8 @@ import { StatusBadge, Badge } from '@/components/ui/Badge';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { cn } from '@/lib/cn';
+import { buttonClasses } from '@/components/ui/Button';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:]+@[^\s@<>()[\]\\,;:]+\.[A-Za-z]{2,}$/;
 
@@ -85,6 +88,7 @@ export function TrackPage() {
   const resultRef = useRef<HTMLDivElement>(null);
   const resultHeadingRef = useRef<HTMLHeadingElement>(null);
   const inFlight = useRef(false);
+  const reduceMotion = usePrefersReducedMotion();
 
   usePageMeta({
     title: 'Track a Support Request',
@@ -172,7 +176,7 @@ export function TrackPage() {
         description="Enter the reference from your confirmation and the email address you used. Status and responses are read directly from your support record."
       />
 
-      <div className="container-page py-10 md:py-14">
+      <div className="container-page section-compact">
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_296px] lg:items-start lg:gap-14">
           <div className="min-w-0">
             <form
@@ -237,7 +241,12 @@ export function TrackPage() {
               {view === 'loading' ? <ResultSkeleton /> : null}
 
               {view === 'found' && ticket ? (
-                <div className="animate-fade-up mt-5 overflow-hidden rounded-panel border border-line-subtle bg-card shadow-card">
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+                  className="mt-5 overflow-hidden rounded-panel border border-line-subtle bg-card shadow-card"
+                >
                   <div className="border-b border-line-subtle p-5 sm:p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
@@ -367,11 +376,16 @@ export function TrackPage() {
                       Submit a new request
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               ) : null}
 
               {view === 'notfound' ? (
-                <div className="animate-fade-up mt-5 rounded-card border border-line-subtle bg-card p-6">
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.22 }}
+                  className="mt-5 rounded-card border border-line-subtle bg-card p-6"
+                >
                   <span className="flex size-10 items-center justify-center rounded-xl border border-line bg-white/[0.02] text-muted">
                     <SearchX aria-hidden="true" className="size-5" />
                   </span>
@@ -389,23 +403,29 @@ export function TrackPage() {
                         resetLookup();
                         document.getElementById('track-reference')?.focus();
                       }}
-                      className="inline-flex h-9 items-center rounded-lg border border-line-strong bg-raised/60 px-3.5 text-[12px] font-medium text-ink hover:bg-raised"
+                      className={buttonClasses({ variant: 'secondary', size: 'sm' })}
                     >
                       Try again
                     </button>
                     <Link
                       to="/submit"
-                      className="inline-flex h-9 items-center gap-1.5 rounded-lg bg-lime px-3.5 text-[12px] font-medium text-[#0A0E08] hover:bg-lime-deep"
+                      className={buttonClasses({ size: 'sm' })}
                     >
                       Submit a request
                       <ArrowRight aria-hidden="true" className="size-3.5" />
                     </Link>
                   </div>
-                </div>
+                </motion.div>
               ) : null}
 
               {view === 'error' ? (
-                <div className="animate-fade-up mt-5 rounded-card border border-error/25 bg-error/[0.05] p-6" role="alert">
+                <motion.div
+                  initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.22 }}
+                  className="mt-5 rounded-card border border-error/25 bg-error/[0.05] p-6"
+                  role="alert"
+                >
                   <span className="flex size-10 items-center justify-center rounded-xl border border-error/25 bg-error/10 text-error">
                     <CircleAlert aria-hidden="true" className="size-5" />
                   </span>
@@ -416,12 +436,12 @@ export function TrackPage() {
                   <button
                     type="button"
                     onClick={() => void runLookup(reference.trim(), email)}
-                    className="mt-5 inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-raised/60 px-3.5 text-[12px] font-medium text-ink hover:bg-raised"
+                    className={buttonClasses({ variant: 'secondary', size: 'sm', className: 'mt-5' })}
                   >
                     <RefreshCw aria-hidden="true" className="size-3.5" />
                     Retry lookup
                   </button>
-                </div>
+                </motion.div>
               ) : null}
             </div>
           </div>

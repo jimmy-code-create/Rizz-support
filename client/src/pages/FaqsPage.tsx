@@ -126,7 +126,7 @@ export function FaqsPage() {
           </div>
 
           <div
-            className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
+            className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1"
             role="group"
             aria-label="Filter questions by category"
           >
@@ -155,7 +155,7 @@ export function FaqsPage() {
       </PageHeader>
 
       <section className="container-page section-compact">
-        <div className="mx-auto max-w-4xl">
+        <div className="max-w-4xl">
           <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-line-subtle pb-4">
             <p className="text-[12px] text-faint" aria-live="polite">
               <span className="font-medium tabular-nums text-ink">{filtered.length}</span>{' '}

@@ -86,7 +86,7 @@ export function HelpPage() {
             ) : null}
           </div>
 
-          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1" role="group" aria-label="Filter by category">
+          <div className="no-scrollbar -mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1" role="group" aria-label="Filter by category">
             <button
               type="button"
               onClick={() => updateParams(query, 'all')}

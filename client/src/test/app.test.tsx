@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, within } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { App } from '@/App';
 
@@ -48,6 +48,29 @@ describe('support center shell', () => {
       await screen.findByRole('heading', { level: 1, name: 'Frequently asked questions' }),
     ).toBeInTheDocument();
     expect(screen.getAllByRole('button', { name: /What is Rizz\?/ }).length).toBeGreaterThan(0);
+  });
+
+  it('opens the search palette, closes on Escape, and opens a result', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'How can we help you?' }, { timeout: 5000 });
+
+    const opener = screen.getByRole('button', { name: 'Search the support center' });
+    await user.click(opener);
+    const dialog = await screen.findByRole('dialog', { name: 'Search the Rizz Support Center' });
+    expect(within(dialog).getByRole('combobox')).toHaveFocus();
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Search the Rizz Support Center' })).not.toBeInTheDocument());
+
+    await user.click(opener);
+    const reopened = await screen.findByRole('dialog', { name: 'Search the Rizz Support Center' });
+    await user.type(within(reopened).getByRole('combobox'), 'bug');
+    const option = await screen.findByRole('option', { name: /How to report a bug/i });
+    await user.click(option);
+
+    await waitFor(() => expect(window.location.pathname).toContain('/help/'));
+    await waitFor(() => expect(screen.queryByRole('dialog', { name: 'Search the Rizz Support Center' })).not.toBeInTheDocument());
   });
 
   it('opens the mobile navigation, locks scroll, and closes after navigating', async () => {

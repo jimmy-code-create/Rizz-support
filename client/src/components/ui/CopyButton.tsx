@@ -62,7 +62,7 @@ export function CopyButton({
       onClick={handleCopy}
       aria-label={`${label}: ${value}`}
       className={cn(
-        'inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-raised/60 px-2.5 text-[12px] font-medium text-muted transition-colors hover:border-lime/30 hover:text-lime',
+        'inline-flex h-9 items-center gap-1.5 rounded-lg border border-line-strong bg-raised/60 px-2.5 text-[12px] font-medium text-muted transition-colors hover:border-lime/30 hover:text-lime active:bg-elevated',
         className,
       )}
     >
