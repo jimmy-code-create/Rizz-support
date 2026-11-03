@@ -1,5 +1,5 @@
-import { ARTICLES } from '@/data/articles';
-import { FAQS } from '@/data/faqs';
+import { ARTICLES } from '@/content/articles';
+import { FAQS } from '@/content/faqs';
 import { SearchBox } from '@/components/search/SearchBox';
 
 export function Hero() {

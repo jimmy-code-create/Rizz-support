@@ -1,5 +1,5 @@
-import { ARTICLES, articleSearchText, type HelpArticle } from '@/data/articles';
-import { FAQS, type Faq } from '@/data/faqs';
+import { ARTICLES, articleSearchText, type HelpArticle } from '@/content/articles';
+import { FAQS, type Faq } from '@/content/faqs';
 import { SUPPORT_CATEGORIES, categoryById } from '@shared/support';
 
 export type SearchKind = 'article' | 'faq' | 'category';

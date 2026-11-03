@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import { FAQS } from '@/data/faqs';
+import { FAQS } from '@/content/faqs';
 import { Accordion } from '@/components/ui/Accordion';
 import { buttonClasses } from '@/components/ui/Button';
 

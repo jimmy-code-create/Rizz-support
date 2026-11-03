@@ -15,7 +15,7 @@ import {
   readingTimeMinutes,
   relatedArticles,
   type ArticleBlock,
-} from '@/data/articles';
+} from '@/content/articles';
 import { formatDate, formatReadingTime } from '@/lib/format';
 import { usePageMeta } from '@/lib/seo';
 import { PageHeader } from '@/components/support/PageHeader';

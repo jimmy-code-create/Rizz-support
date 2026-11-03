@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Search, SearchX, X } from 'lucide-react';
 import { SUPPORT_CATEGORIES, categoryById } from '@shared/support';
-import { FAQS } from '@/data/faqs';
+import { FAQS } from '@/content/faqs';
 import { usePageMeta } from '@/lib/seo';
 import { PageHeader } from '@/components/support/PageHeader';
 import { Accordion } from '@/components/ui/Accordion';
