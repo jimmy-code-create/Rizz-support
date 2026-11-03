@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { motion } from 'motion/react';
 import { cn } from '@/lib/cn';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 export interface AccordionItem {
   id: string;
@@ -24,6 +26,7 @@ function hashId(): string {
  * which is what search results and shared links rely on.
  */
 export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }: AccordionProps) {
+  const reduceMotion = usePrefersReducedMotion();
   const [openId, setOpenId] = useState<string | null>(() => {
     const fromHash = hashId();
     if (fromHash && items.some((item) => item.id === fromHash)) return fromHash;
@@ -98,9 +101,14 @@ export function Accordion({ items, defaultOpenId, className, idPrefix = 'faq' }:
               className="accordion-panel"
             >
               <div className="accordion-inner">
-                <div className="max-w-[64ch] px-5 pb-5 pr-12 text-[13px] leading-[1.8] text-muted sm:px-6 sm:text-[13.5px]">
+                <motion.div
+                  initial={false}
+                  animate={{ opacity: open ? 1 : 0, y: open ? 0 : -3 }}
+                  transition={{ duration: reduceMotion ? 0 : 0.18, ease: 'easeOut' }}
+                  className="max-w-[64ch] px-5 pb-5 pr-12 text-[13px] leading-[1.8] text-muted sm:px-6 sm:text-[13.5px]"
+                >
                   {item.answer}
-                </div>
+                </motion.div>
               </div>
             </div>
           </div>

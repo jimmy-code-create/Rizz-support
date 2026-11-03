@@ -2,6 +2,7 @@
 import '@testing-library/jest-dom/vitest';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import axe from 'axe-core';
 import { App } from '@/App';
 
@@ -42,6 +43,19 @@ describe('accessibility', () => {
     window.history.replaceState({}, '', '/');
     render(<App />);
     await screen.findByRole('heading', { level: 1, name: 'How can we help you?' });
+    await expectNoViolations();
+  });
+
+  it('search suggestions panel has no axe violations', async () => {
+    window.history.replaceState({}, '', '/');
+    const user = userEvent.setup();
+    render(<App />);
+    const input = await screen.findByRole('combobox', { name: 'Search help, articles, or common issues' });
+    await user.click(input);
+    await screen.findByText('Popular searches');
+    await expectNoViolations();
+    await user.type(input, 'bug');
+    await screen.findByRole('listbox');
     await expectNoViolations();
   });
 

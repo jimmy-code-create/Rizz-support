@@ -1,13 +1,16 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { motion } from 'motion/react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { SkipLink } from '@/components/layout/SkipLink';
 import { RouteFallback } from '@/components/layout/RouteFallback';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 export function Layout() {
   const { pathname, hash } = useLocation();
   const mainRef = useRef<HTMLElement>(null);
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (hash) return;
@@ -20,11 +23,16 @@ export function Layout() {
       <SkipLink />
       <Navbar />
       <main id="main-content" ref={mainRef} tabIndex={-1} className="flex-1 focus:outline-none">
-        <div key={pathname} className="animate-fade-in">
+        <motion.div
+          key={pathname}
+          initial={reduceMotion ? false : { opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={reduceMotion ? { duration: 0 } : { duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+        >
           <Suspense fallback={<RouteFallback />}>
             <Outlet />
           </Suspense>
-        </div>
+        </motion.div>
       </main>
       <Footer />
     </div>

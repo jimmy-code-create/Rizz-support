@@ -1,5 +1,6 @@
 import { lazy } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { MotionConfig } from 'motion/react';
 import { Layout } from '@/components/layout/Layout';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastProvider } from '@/components/ui/Toast';
@@ -16,23 +17,25 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage').then((module) => 
 export function App() {
   return (
     <ErrorBoundary>
-      <BrowserRouter>
-        <ToastProvider>
-          <SearchPaletteProvider>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="help" element={<HelpPage />} />
-                <Route path="help/:slug" element={<ArticlePage />} />
-                <Route path="faqs" element={<FaqsPage />} />
-                <Route path="submit" element={<SubmitPage />} />
-                <Route path="track" element={<TrackPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Route>
-            </Routes>
-          </SearchPaletteProvider>
-        </ToastProvider>
-      </BrowserRouter>
+      <MotionConfig reducedMotion="user">
+        <BrowserRouter>
+          <ToastProvider>
+            <SearchPaletteProvider>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="help" element={<HelpPage />} />
+                  <Route path="help/:slug" element={<ArticlePage />} />
+                  <Route path="faqs" element={<FaqsPage />} />
+                  <Route path="submit" element={<SubmitPage />} />
+                  <Route path="track" element={<TrackPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Route>
+              </Routes>
+            </SearchPaletteProvider>
+          </ToastProvider>
+        </BrowserRouter>
+      </MotionConfig>
     </ErrorBoundary>
   );
 }

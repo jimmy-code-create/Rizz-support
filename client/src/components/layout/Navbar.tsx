@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { AnimatePresence, motion } from 'motion/react';
 import { ArrowRight, ArrowUpRight, Menu, Plus, Search, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { BrandHomeLink } from '@/components/ui/Brand';
 import { useSearchPalette } from '@/components/search/SearchPalette';
 import { buttonClasses } from '@/components/ui/Button';
 import { RIZZ_SITE_URL } from '@shared/support';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 const NAV_LINKS = [
   { label: 'Home', to: '/', match: (pathname: string) => pathname === '/' },
@@ -31,6 +33,7 @@ export function Navbar() {
   const drawerRef = useRef<HTMLDivElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const [shortcut, setShortcut] = useState('Ctrl K');
+  const reduceMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     setShortcut(isMac() ? '⌘ K' : 'Ctrl K');
@@ -115,7 +118,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={openPalette}
-              className="hidden h-8 items-center gap-2 rounded-lg border border-transparent px-2 text-[12px] text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:inline-flex"
+              className="hidden h-9 items-center gap-2 rounded-lg border border-transparent px-2.5 text-[12px] text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:inline-flex"
               aria-label="Search the support center"
             >
               <Search aria-hidden="true" className="size-3.5" />
@@ -162,11 +165,16 @@ export function Navbar() {
         </div>
       </div>
 
-      {mobileOpen ? (
-        <div
+      <AnimatePresence>
+        {mobileOpen ? (
+        <motion.div
           ref={drawerRef}
           id="mobile-menu"
-          className="animate-drawer fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto border-t border-line-subtle bg-base lg:hidden"
+          initial={reduceMotion ? false : { opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
+          transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 420, damping: 36, mass: 0.8 }}
+          className="fixed inset-x-0 bottom-0 top-16 z-40 overflow-y-auto border-t border-line-subtle bg-base lg:hidden"
         >
           <div className="container-page flex min-h-full flex-col py-6">
             <p className="eyebrow-plain">Navigate</p>
@@ -231,8 +239,9 @@ export function Navbar() {
               Help articles, answers, and real request tracking for Rizz.
             </p>
           </div>
-        </div>
+        </motion.div>
       ) : null}
+      </AnimatePresence>
     </header>
   );
 }

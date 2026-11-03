@@ -46,6 +46,37 @@ describe('SearchBox', () => {
     expect(await screen.findByText('Article destination')).toBeInTheDocument();
   });
 
+  it('opens a viewport-anchored panel on focus and closes it with Escape or an outside click', async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <SearchBox variant="hero" inputLabel="Search help" showPopular />
+      </MemoryRouter>,
+    );
+
+    const input = screen.getByRole('combobox', { name: 'Search help' });
+    await user.click(input);
+
+    const panelId = input.getAttribute('aria-controls') ?? '';
+    await waitFor(() => expect(input).toHaveAttribute('aria-expanded', 'true'));
+
+    const panel = document.getElementById(panelId);
+    expect(panel).not.toBeNull();
+    expect(panel?.style.position).toBe('fixed');
+    expect(panel?.style.zIndex).toBe('45');
+    expect(screen.getAllByRole('link').length).toBeGreaterThan(0);
+
+    await user.keyboard('{Escape}');
+    await waitFor(() => expect(input).toHaveAttribute('aria-expanded', 'false'));
+    await waitFor(() => expect(document.getElementById(panelId)).toBeNull());
+
+    await user.click(input);
+    await waitFor(() => expect(document.getElementById(panelId)).not.toBeNull());
+    await user.click(document.body);
+    await waitFor(() => expect(input).toHaveAttribute('aria-expanded', 'false'));
+    await waitFor(() => expect(document.getElementById(panelId)).toBeNull());
+  });
+
   it('supports keyboard navigation and shows an empty state', async () => {
     const user = userEvent.setup();
     render(

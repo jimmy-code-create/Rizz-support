@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
   AlertTriangle,
@@ -29,11 +30,13 @@ import { usePageMeta } from '@/lib/seo';
 import { preferredScrollBehavior } from '@/lib/motion';
 import { PageHeader } from '@/components/support/PageHeader';
 import { Button } from '@/components/ui/Button';
+import { buttonClasses } from '@/components/ui/Button';
 import { Input, Select, Textarea } from '@/components/ui/Field';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { StatusBadge } from '@/components/ui/Badge';
 import { useToast } from '@/components/ui/Toast';
 import { cn } from '@/lib/cn';
+import { usePrefersReducedMotion } from '@/lib/use-reduced-motion';
 
 const EMAIL_PATTERN = /^[^\s@<>()[\]\\,;:]+@[^\s@<>()[\]\\,;:]+\.[A-Za-z]{2,}$/;
 const ALLOWED_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.pdf', '.txt'];
@@ -156,6 +159,7 @@ export function SubmitPage() {
   const [duplicateReference, setDuplicateReference] = useState<string | null>(null);
   const [ticket, setTicket] = useState<TicketSummary | null>(null);
   const [pending, setPending] = useState(false);
+  const reduceMotion = usePrefersReducedMotion();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formTopRef = useRef<HTMLDivElement>(null);
   const successHeadingRef = useRef<HTMLHeadingElement>(null);
@@ -316,8 +320,13 @@ export function SubmitPage() {
     return (
       <section className="relative overflow-hidden">
         <div className="hero-ambient opacity-80" aria-hidden="true" />
-        <div className="container-page relative max-w-3xl py-14 md:py-20">
-          <div className="animate-fade-up rounded-panel border border-line-subtle bg-card p-6 shadow-card sm:p-9">
+        <div className="container-page relative max-w-3xl section-compact">
+          <motion.div
+            initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.995 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={reduceMotion ? { duration: 0 } : { type: 'spring', stiffness: 380, damping: 34, mass: 0.8 }}
+            className="rounded-panel border border-line-subtle bg-card p-6 shadow-card sm:p-9"
+          >
             <span className="flex size-12 items-center justify-center rounded-2xl border border-lime/25 bg-lime/[0.08] text-lime">
               <CheckCircle2 aria-hidden="true" className="size-6" />
             </span>
@@ -380,16 +389,12 @@ export function SubmitPage() {
             <div className="mt-8 flex flex-col gap-2 border-t border-line-subtle pt-6 sm:flex-row">
               <Link
                 to={`/track?ticket=${encodeURIComponent(ticket.reference)}`}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-lime px-5 text-sm font-medium text-[#0A0E08] transition-colors hover:bg-lime-deep"
+                className={buttonClasses({ size: 'lg' })}
               >
                 Track this request
                 <ArrowRight aria-hidden="true" className="size-4" />
               </Link>
-              <button
-                type="button"
-                onClick={resetForm}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-line-strong bg-raised/60 px-5 text-sm font-medium text-ink transition-colors hover:bg-raised"
-              >
+              <button type="button" onClick={resetForm} className={buttonClasses({ variant: 'secondary', size: 'lg' })}>
                 Submit another request
               </button>
             </div>
@@ -399,7 +404,7 @@ export function SubmitPage() {
               Tracking requires the ticket reference and the email address you entered above. This
               portal does not send an email confirmation.
             </p>
-          </div>
+          </motion.div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
             {[
@@ -442,7 +447,7 @@ export function SubmitPage() {
         </div>
       </PageHeader>
 
-      <div className="container-page py-10 md:py-14" ref={formTopRef}>
+      <div className="container-page section-compact" ref={formTopRef}>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start lg:gap-14">
           <form
             onSubmit={handleSubmit}
@@ -722,13 +727,25 @@ export function SubmitPage() {
                 <div className="mt-5">
                   <div className="rounded-input border border-line-subtle bg-surface/40 p-4 sm:p-5">
                 {errorCount > 0 && attempted ? (
-                  <div role="alert" className="mb-4 rounded-xl border border-error/25 bg-error/[0.06] p-3.5 text-[12px] text-error">
+                  <motion.div
+                    role="alert"
+                    initial={reduceMotion ? false : { opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: reduceMotion ? 0 : 0.18 }}
+                    className="mb-4 rounded-xl border border-error/25 bg-error/[0.06] p-3.5 text-[12px] text-error"
+                  >
                     Please check the {errorCount === 1 ? 'highlighted field' : `${errorCount} highlighted fields`} and try again.
-                  </div>
+                  </motion.div>
                 ) : null}
 
                 {serverError ? (
-                  <div role="alert" className="mb-4 rounded-xl border border-warning/25 bg-warning/[0.06] p-4">
+                  <motion.div
+                    role="alert"
+                    initial={reduceMotion ? false : { opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: reduceMotion ? 0 : 0.18 }}
+                    className="mb-4 rounded-xl border border-warning/25 bg-warning/[0.06] p-4"
+                  >
                     <div className="flex items-start gap-2.5">
                       <AlertTriangle aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-warning" />
                       <div className="min-w-0">
@@ -749,7 +766,7 @@ export function SubmitPage() {
                         ) : null}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 ) : null}
 
                 <Button

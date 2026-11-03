@@ -27,7 +27,7 @@ const QUICK_PATHS = [
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-line-subtle">
+    <section className="relative border-b border-line-subtle">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="hero-canvas" />
         <div className="bg-grid absolute inset-0" />

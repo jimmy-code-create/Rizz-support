@@ -212,6 +212,15 @@
     padding-block: clamp(2.5rem, 4vw, 3.75rem);
   }
 
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
   /* ------------------------------------------------------------ typography */
   .eyebrow {
     display: inline-flex;
