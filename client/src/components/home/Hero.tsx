@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpen, HelpCircle, LifeBuoy } from 'lucide-react';
+import { ArrowRight, BookOpen, HelpCircle, LifeBuoy, ThumbsUp } from 'lucide-react';
 import { ARTICLES } from '@/content/articles';
 import { FAQS } from '@/content/faqs';
 import { SearchBox } from '@/components/search/SearchBox';
@@ -22,6 +22,12 @@ const QUICK_PATHS = [
     label: 'Track a request',
     detail: 'Check the real status of a ticket',
     icon: LifeBuoy,
+  },
+  {
+    to: '/issues',
+    label: 'Community issue board',
+    detail: 'Upvote bugs and requests from other people',
+    icon: ThumbsUp,
   },
 ] as const;
 

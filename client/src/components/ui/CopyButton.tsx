@@ -2,23 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { useToast } from '@/components/ui/Toast';
-
-async function copyText(value: string): Promise<void> {
-  if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value);
-    return;
-  }
-  const textarea = document.createElement('textarea');
-  textarea.value = value;
-  textarea.setAttribute('readonly', '');
-  textarea.style.position = 'fixed';
-  textarea.style.opacity = '0';
-  document.body.appendChild(textarea);
-  textarea.select();
-  const copied = document.execCommand('copy');
-  document.body.removeChild(textarea);
-  if (!copied) throw new Error('Copy failed');
-}
+import { copyTextToClipboard } from '@/lib/clipboard';
 
 export function CopyButton({
   value,
@@ -42,7 +26,7 @@ export function CopyButton({
 
   const handleCopy = async () => {
     try {
-      await copyText(value);
+      await copyTextToClipboard(value);
       setCopied(true);
       toast({ title: 'Copied to clipboard', tone: 'success' });
       if (timer.current) window.clearTimeout(timer.current);

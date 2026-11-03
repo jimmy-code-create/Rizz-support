@@ -17,6 +17,11 @@ const NAV_LINKS = [
     match: (pathname: string) => pathname === '/help' || pathname.startsWith('/help/'),
   },
   { label: 'FAQs', to: '/faqs', match: (pathname: string) => pathname === '/faqs' },
+  {
+    label: 'Issues',
+    to: '/issues',
+    match: (pathname: string) => pathname === '/issues' || pathname.startsWith('/issues/'),
+  },
 ] as const;
 
 function isMac(): boolean {
@@ -101,16 +106,31 @@ export function Navbar() {
           <div className="flex min-w-0 items-center gap-7">
             <BrandHomeLink compact />
             <nav aria-label="Primary" className="hidden items-center gap-6 lg:flex">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  aria-current={link.match(pathname) ? 'page' : undefined}
-                  className="nav-link"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {NAV_LINKS.map((link) => {
+                const active = link.match(pathname);
+                return (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    aria-current={active ? 'page' : undefined}
+                    className="nav-link"
+                  >
+                    {link.label}
+                    {active ? (
+                      <motion.span
+                        layoutId="primary-nav-underline"
+                        aria-hidden="true"
+                        className="absolute inset-x-0 -bottom-px h-[1.5px] rounded-full bg-lime"
+                        transition={
+                          reduceMotion
+                            ? { duration: 0 }
+                            : { type: 'spring', stiffness: 520, damping: 42, mass: 0.6 }
+                        }
+                      />
+                    ) : null}
+                  </Link>
+                );
+              })}
             </nav>
           </div>
 
@@ -118,8 +138,8 @@ export function Navbar() {
             <button
               type="button"
               onClick={openPalette}
-              className="hidden h-9 items-center gap-2 rounded-lg border border-transparent px-2.5 text-[12px] text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:inline-flex"
               aria-label="Search the support center"
+              className="flex size-11 items-center justify-center gap-2 rounded-lg border border-transparent text-muted transition-colors hover:border-line hover:bg-white/[0.02] hover:text-ink sm:h-9 sm:w-auto sm:px-2.5"
             >
               <Search aria-hidden="true" className="size-3.5" />
               <span className="hidden md:inline">Search</span>
@@ -127,6 +147,8 @@ export function Navbar() {
                 {shortcut}
               </kbd>
             </button>
+
+            <span aria-hidden="true" className="mx-1 hidden h-4 w-px bg-line sm:block" />
 
             <Link
               to="/submit"

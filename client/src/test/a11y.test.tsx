@@ -15,6 +15,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 });
 
 async function audit() {
@@ -75,6 +76,52 @@ describe('accessibility', () => {
     window.history.replaceState({}, '', '/help/how-to-report-a-bug');
     render(<App />);
     await screen.findByRole('heading', { level: 1, name: 'How to report a bug' });
+    await expectNoViolations();
+  });
+
+  it('issue board and report form have no axe violations', async () => {
+    const user = userEvent.setup();
+    const issue = {
+      id: 'IS-ABC123',
+      title: 'Voice room joins fail on a slow connection',
+      description:
+        'Joining a voice room sometimes leaves the join button spinning without entering the room.',
+      category: 'technical',
+      status: 'open',
+      votes: 1,
+      voted: false,
+      createdAt: '2026-11-03T07:00:00.000Z',
+      updatedAt: '2026-11-03T07:00:00.000Z',
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(JSON.stringify({ issues: [issue] }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        }),
+      ),
+    );
+
+    window.history.replaceState({}, '', '/issues');
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'Community issue board' });
+    await screen.findByText(issue.title);
+    await expectNoViolations();
+
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Actions for Voice room joins fail on a slow connection',
+      }),
+    );
+    await screen.findByRole('menu');
+    await expectNoViolations();
+
+    cleanup();
+    vi.unstubAllGlobals();
+    window.history.replaceState({}, '', '/issues/new');
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'Report a public issue' });
     await expectNoViolations();
   });
 

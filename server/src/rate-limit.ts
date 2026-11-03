@@ -13,6 +13,8 @@ export function buildRateLimiters(enabled = true) {
       api: passThrough,
       createTicket: passThrough,
       lookupTicket: passThrough,
+      createIssue: passThrough,
+      voteIssue: passThrough,
       admin: passThrough,
     };
   }
@@ -50,6 +52,25 @@ export function buildRateLimiters(enabled = true) {
           code: 'RATE_LIMITED',
           message: 'Too many tracking attempts. Please wait a few minutes and try again.',
         },
+      },
+    }),
+    createIssue: rateLimit({
+      ...base,
+      windowMs: 30 * 60_000,
+      limit: 5,
+      message: {
+        error: {
+          code: 'RATE_LIMITED',
+          message: 'Too many public issue reports from this connection. Please try again later.',
+        },
+      },
+    }),
+    voteIssue: rateLimit({
+      ...base,
+      windowMs: 10 * 60_000,
+      limit: 80,
+      message: {
+        error: { code: 'RATE_LIMITED', message: 'Too many votes. Please wait a moment and try again.' },
       },
     }),
     admin: rateLimit({
