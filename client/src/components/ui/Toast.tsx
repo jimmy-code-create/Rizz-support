@@ -25,9 +25,9 @@ const ICONS = {
 };
 
 const TONE_CLASSES: Record<ToastTone, string> = {
-  success: 'text-lime',
-  error: 'text-red-300',
-  info: 'text-sky-300',
+  success: 'text-success',
+  error: 'text-error',
+  info: 'text-info',
 };
 
 function ToastCard({ item, onDismiss }: { item: ToastItemData; onDismiss: (id: string) => void }) {
@@ -43,7 +43,7 @@ function ToastCard({ item, onDismiss }: { item: ToastItemData; onDismiss: (id: s
 
   return (
     <div
-      className="animate-scale-in pointer-events-auto flex w-full items-start gap-3 rounded-xl border border-line-strong bg-[#141a13]/95 p-4 shadow-pop backdrop-blur-md"
+      className="animate-scale-in pointer-events-auto flex w-full items-start gap-3 rounded-card border border-line-strong bg-card/95 p-4 shadow-pop backdrop-blur-md"
       role="status"
     >
       <Icon aria-hidden="true" className={cn('mt-0.5 size-[18px] shrink-0', TONE_CLASSES[item.tone])} />

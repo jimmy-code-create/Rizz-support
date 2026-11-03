@@ -16,7 +16,7 @@ export function Layout() {
   }, [pathname, hash]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-base">
+    <div className="flex min-h-dvh flex-col overflow-x-clip bg-base">
       <SkipLink />
       <Navbar />
       <main id="main-content" ref={mainRef} tabIndex={-1} className="flex-1 focus:outline-none">

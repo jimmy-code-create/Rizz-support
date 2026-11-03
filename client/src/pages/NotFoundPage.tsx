@@ -25,18 +25,18 @@ export function NotFoundPage() {
             src="https://rizzapp.onrender.com/cats/searching.svg"
             alt=""
             aria-hidden="true"
-            className="mb-6 h-28 w-auto opacity-90"
+            className="mb-6 h-24 w-auto opacity-90"
             onError={() => setArtFailed(true)}
             draggable={false}
           />
         ) : (
-          <span className="mb-6 flex size-14 items-center justify-center rounded-2xl border border-line bg-white/[0.02] text-lime">
+          <span className="mb-6 flex size-14 items-center justify-center rounded-card border border-line-subtle bg-card text-muted">
             <Compass aria-hidden="true" className="size-6" />
           </span>
         )}
 
         <p className="font-mono text-[11px] tracking-[0.22em] text-moss-soft">404</p>
-        <h1 className="mt-3 max-w-xl text-[2.1rem] font-semibold leading-[1.08] tracking-[-0.04em] text-ink sm:text-[2.6rem]">
+        <h1 className="page-title mt-3 max-w-xl">
           This page wandered off
         </h1>
         <p className="mt-4 max-w-md text-[13.5px] leading-[1.75] text-muted">

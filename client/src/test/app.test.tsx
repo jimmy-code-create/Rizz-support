@@ -50,6 +50,26 @@ describe('support center shell', () => {
     expect(screen.getAllByRole('button', { name: /What is Rizz\?/ }).length).toBeGreaterThan(0);
   });
 
+  it('opens the mobile navigation, locks scroll, and closes after navigating', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole('heading', { level: 1, name: 'How can we help you?' }, { timeout: 5000 });
+
+    const toggle = screen.getByRole('button', { name: 'Open navigation menu' });
+    await user.click(toggle);
+
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(document.body.style.overflow).toBe('hidden');
+
+    const mobileNav = screen.getByRole('navigation', { name: 'Mobile' });
+    await user.click(within(mobileNav).getByRole('link', { name: 'Help Articles' }));
+
+    expect(
+      await screen.findByRole('heading', { level: 1, name: 'Help articles' }, { timeout: 5000 }),
+    ).toBeInTheDocument();
+    expect(document.body.style.overflow).not.toBe('hidden');
+  });
+
   it('renders an article page and a 404 for unknown routes', async () => {
     window.history.replaceState({}, '', '/help/how-to-report-a-bug');
     render(<App />);

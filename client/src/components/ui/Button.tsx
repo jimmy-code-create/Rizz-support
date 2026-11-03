@@ -13,24 +13,25 @@ interface StyleOptions {
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    'bg-lime text-[#0A0E08] hover:bg-lime-deep active:bg-[#8ed71f] shadow-[0_1px_0_rgba(255,255,255,0.25)_inset,0_10px_30px_-12px_rgba(183,255,50,0.45)]',
+    'bg-lime text-[#0A0E08] shadow-[0_1px_0_rgba(255,255,255,0.22)_inset] hover:bg-lime-deep active:bg-[#9bea26]',
   secondary:
-    'border border-line-strong bg-raised/60 text-ink hover:bg-raised hover:border-lime/30',
-  ghost: 'text-muted hover:text-ink hover:bg-white/[0.045]',
-  subtle: 'border border-lime/20 bg-lime/[0.08] text-lime hover:bg-lime/[0.13] hover:border-lime/30',
+    'border border-line bg-raised text-ink hover:border-line-strong hover:bg-elevated',
+  ghost: 'text-muted hover:bg-white/[0.04] hover:text-ink',
+  subtle:
+    'border border-line bg-white/[0.025] text-ink hover:border-line-strong hover:bg-white/[0.045]',
   danger:
-    'border border-red-400/25 bg-red-400/10 text-red-200 hover:bg-red-400/15 hover:border-red-400/40',
+    'border border-error/25 bg-error/10 text-error hover:border-error/40 hover:bg-error/15',
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  sm: 'h-9 px-3.5 text-[13px] gap-1.5 rounded-[10px]',
-  md: 'h-11 px-5 text-sm gap-2 rounded-xl',
-  lg: 'h-12 px-6 text-[15px] gap-2 rounded-xl',
+  sm: 'h-9 px-3.5 text-[12.5px] gap-1.5 rounded-lg',
+  md: 'h-10 px-4 text-[13px] gap-2 rounded-[10px]',
+  lg: 'h-11 px-5 text-[13.5px] gap-2 rounded-xl',
 };
 
 export function buttonClasses({ variant = 'primary', size = 'md', className }: StyleOptions = {}): string {
   return cn(
-    'inline-flex select-none items-center justify-center font-medium tracking-[-0.01em] transition-[background-color,border-color,color,transform,box-shadow] duration-200 active:translate-y-px disabled:pointer-events-none disabled:opacity-50',
+    'inline-flex select-none items-center justify-center whitespace-nowrap font-medium tracking-[-0.005em] transition-[background-color,border-color,color,box-shadow,transform] duration-150 active:translate-y-px disabled:pointer-events-none disabled:opacity-45',
     VARIANT_CLASSES[variant],
     SIZE_CLASSES[size],
     className,
@@ -45,7 +46,17 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-  { variant = 'primary', size = 'md', loading = false, loadingLabel = 'Loading', className, children, disabled, type = 'button', ...props },
+  {
+    variant = 'primary',
+    size = 'md',
+    loading = false,
+    loadingLabel = 'Loading',
+    className,
+    children,
+    disabled,
+    type = 'button',
+    ...props
+  },
   ref,
 ) {
   return (

@@ -4,12 +4,12 @@ import { statusMeta } from '@shared/support';
 export type BadgeTone = 'lime' | 'blue' | 'amber' | 'mint' | 'neutral' | 'red';
 
 const TONE_CLASSES: Record<BadgeTone, string> = {
-  lime: 'border-lime/25 bg-lime/10 text-lime',
-  blue: 'border-sky-400/20 bg-sky-400/10 text-sky-300',
-  amber: 'border-amber-300/20 bg-amber-300/10 text-amber-200',
-  mint: 'border-emerald-300/20 bg-emerald-300/10 text-emerald-200',
+  lime: 'border-lime/20 bg-lime/[0.08] text-lime',
+  blue: 'border-info/20 bg-info/10 text-info',
+  amber: 'border-warning/20 bg-warning/10 text-warning',
+  mint: 'border-success/20 bg-success/10 text-success',
   neutral: 'border-line bg-white/[0.03] text-muted',
-  red: 'border-red-400/25 bg-red-400/10 text-red-200',
+  red: 'border-error/25 bg-error/10 text-error',
 };
 
 export function Badge({

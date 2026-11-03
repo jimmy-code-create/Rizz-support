@@ -108,9 +108,9 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
                 role="dialog"
                 aria-modal="true"
                 aria-label="Search the Rizz Support Center"
-                className="animate-scale-in w-full max-w-2xl overflow-hidden rounded-2xl border border-line-strong bg-[#0b0f0a] shadow-[0_50px_120px_-30px_rgba(0,0,0,0.95)]"
+                className="animate-scale-in w-full max-w-2xl overflow-hidden rounded-panel border border-line-strong bg-base shadow-pop"
               >
-                <div className="flex items-center justify-between border-b border-line px-4 py-3 sm:px-5">
+                <div className="flex items-center justify-between border-b border-line-subtle px-4 py-3 sm:px-5">
                   <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.14em] text-moss-soft">
                     <Search aria-hidden="true" className="size-3.5" />
                     Search support
@@ -134,7 +134,7 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
                     inputLabel="Search the support center"
                   />
                 </div>
-                <div className="flex items-center justify-between gap-3 border-t border-line bg-black/20 px-4 py-2.5 text-[10.5px] text-muted sm:px-5">
+                <div className="flex items-center justify-between gap-3 border-t border-line-subtle bg-black/20 px-4 py-2.5 text-[10.5px] text-faint sm:px-5">
                   <span className="flex items-center gap-1.5">
                     <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↑</kbd>
                     <kbd className="rounded border border-line bg-raised/70 px-1 py-0.5 text-[9.5px]">↓</kbd>

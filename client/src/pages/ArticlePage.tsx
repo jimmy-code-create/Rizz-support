@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   CalendarDays,
+  ChevronDown,
   Clock,
   HelpCircle,
   Info,
@@ -71,13 +72,13 @@ function Block({ block, index }: { block: ArticleBlock; index: number }) {
     );
   }
   return (
-    <aside className="my-6 flex gap-3 rounded-xl border border-lime/20 bg-lime/[0.04] p-4">
+    <aside className="my-6 flex gap-3 rounded-input border border-line-subtle bg-white/[0.025] p-4">
       <Info aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-lime" />
       <div>
         {block.title ? (
           <p className="text-[12.5px] font-medium text-ink">{block.title}</p>
         ) : null}
-        <p className="mt-1 text-[12.5px] leading-[1.75] text-[#b9c1b4]">
+        <p className="mt-1 max-w-[62ch] text-[12.5px] leading-[1.75] text-ink-soft">
           <InlineText text={block.text} />
         </p>
       </div>
@@ -104,10 +105,25 @@ export function ArticlePage() {
     .map((block, index) => ({ block, index }))
     .filter(({ block }) => block.type === 'h2');
 
+  const toc = headings.length ? (
+    <ul className="space-y-1">
+      {headings.map(({ block, index }) => (
+        <li key={index}>
+          <a
+            href={`#${slugFor(index)}`}
+            className="block rounded py-1 text-[11.5px] leading-relaxed text-faint transition-colors hover:text-ink"
+          >
+            {block.type === 'h2' ? block.text : ''}
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
   return (
     <article>
       <PageHeader
-        eyebrow={category?.title}
+        eyebrow="Help article"
         breadcrumbs={[
           { label: 'Support', to: '/' },
           { label: 'Help Articles', to: '/help' },
@@ -116,9 +132,12 @@ export function ArticlePage() {
         title={article.title}
         description={article.description}
       >
-        <div className="flex flex-wrap items-center gap-4 text-[11.5px] text-muted">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2.5 text-[11.5px] text-faint">
           {category ? (
-            <Link to={`/help?category=${category.id}`}>
+            <Link
+              to={`/help?category=${category.id}`}
+              className="transition-opacity hover:opacity-80"
+            >
               <Badge tone="lime" dot>
                 {category.title}
               </Badge>
@@ -137,18 +156,32 @@ export function ArticlePage() {
         </div>
       </PageHeader>
 
-      <div className="container-page py-10 md:py-14">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_270px] lg:gap-16">
-          <div className="min-w-0 max-w-2xl">
-            <div className="prose-support">
-              {article.blocks.map((block, index) => (
-                <Block key={`${block.type}-${index}`} block={block} index={index} />
-              ))}
+      <div className="container-page section-compact">
+        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_236px] lg:gap-16">
+          <div className="min-w-0 max-w-[44rem]">
+            {headings.length > 0 ? (
+              <details className="mb-4 rounded-card border border-line-subtle bg-card/60 lg:hidden">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-[12.5px] font-medium text-ink [&::-webkit-details-marker]:hidden">
+                  On this page
+                  <ChevronDown aria-hidden="true" className="size-4 text-faint" />
+                </summary>
+                <nav aria-label="On this page" className="border-t border-line-subtle px-4 py-3">
+                  {toc}
+                </nav>
+              </details>
+            ) : null}
+
+            <div className="rounded-panel border border-line-subtle bg-card/40 px-5 py-7 sm:px-8 sm:py-9">
+              <div className="prose-support max-w-[66ch]">
+                {article.blocks.map((block, index) => (
+                  <Block key={`${block.type}-${index}`} block={block} index={index} />
+                ))}
+              </div>
             </div>
 
-            <div className="mt-10 flex flex-col items-start justify-between gap-4 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-center">
+            <div className="mt-5 flex flex-col items-start justify-between gap-4 rounded-card border border-line-subtle bg-surface/60 p-5 sm:flex-row sm:items-center">
               <div className="flex items-start gap-3">
-                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-line bg-white/[0.02] text-lime">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] border border-line bg-white/[0.02] text-moss-soft">
                   <LifeBuoy aria-hidden="true" className="size-4" />
                 </span>
                 <div>
@@ -164,7 +197,7 @@ export function ArticlePage() {
               </Link>
             </div>
 
-            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-5">
               <Link
                 to="/help"
                 className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-ink"
@@ -172,7 +205,7 @@ export function ArticlePage() {
                 <ArrowLeft aria-hidden="true" className="size-3.5" />
                 All help articles
               </Link>
-              <span className="inline-flex items-center gap-1.5 text-[10.5px] text-muted">
+              <span className="inline-flex items-center gap-1.5 text-[10.5px] text-faint">
                 <HelpCircle aria-hidden="true" className="size-3" />
                 Maintained by the Rizz Support Center
               </span>
@@ -182,26 +215,17 @@ export function ArticlePage() {
           <aside className="hidden lg:block">
             <div className="sticky top-28 space-y-3">
               {headings.length > 0 ? (
-                <nav aria-label="On this page" className="rounded-2xl border border-line bg-card p-4">
-                  <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-moss-soft">On this page</p>
-                  <ul className="mt-3 space-y-2 border-l border-line pl-3">
-                    {headings.map(({ block, index }) => (
-                      <li key={index}>
-                        <a
-                          href={`#${slugFor(index)}`}
-                          className="block text-[11.5px] leading-relaxed text-muted transition-colors hover:text-lime"
-                        >
-                          {block.type === 'h2' ? block.text : ''}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
+                <nav aria-label="On this page" className="rounded-card border border-line-subtle bg-card p-4">
+                  <p className="text-[9.5px] font-medium uppercase tracking-[0.16em] text-faint">
+                    On this page
+                  </p>
+                  <div className="mt-3 border-l border-line-subtle pl-3">{toc}</div>
                 </nav>
               ) : null}
 
-              <div className="rounded-2xl border border-line bg-card p-4">
+              <div className="rounded-card border border-line-subtle bg-card p-4">
                 <p className="text-[12.5px] font-medium text-ink">Need a person?</p>
-                <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted">
+                <p className="mt-1.5 text-[11.5px] leading-relaxed text-faint">
                   Submit a request and track the real status with your reference number.
                 </p>
                 <div className="mt-4 grid gap-2">
@@ -220,12 +244,9 @@ export function ArticlePage() {
           </aside>
         </div>
 
-        <section className="mt-14 border-t border-line pt-10" aria-labelledby="related-heading">
+        <section className="mt-12 border-t border-line-subtle pt-9" aria-labelledby="related-heading">
           <div className="flex items-end justify-between gap-4">
-            <h2
-              id="related-heading"
-              className="text-[1.2rem] font-semibold tracking-[-0.02em] text-ink"
-            >
+            <h2 id="related-heading" className="text-[1.2rem] font-medium tracking-[-0.025em] text-ink">
               Related articles
             </h2>
             <Link
@@ -236,7 +257,7 @@ export function ArticlePage() {
               <ArrowUpRight aria-hidden="true" className="size-3.5" />
             </Link>
           </div>
-          <div className="mt-5 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {relatedArticles(article, 3).map((related) => (
               <ArticleCard key={related.slug} article={related} />
             ))}

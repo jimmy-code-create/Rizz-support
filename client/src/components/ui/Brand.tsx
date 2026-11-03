@@ -11,7 +11,7 @@ export function BrandMark({ size = 30, className }: { size?: number; className?:
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[9px] border border-line-strong bg-[#0f140e]',
+        'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-lg border border-line bg-[#0f140e]',
         className,
       )}
       style={{ width: size, height: size }}
@@ -32,12 +32,15 @@ export function BrandMark({ size = 30, className }: { size?: number; className?:
 
 export function BrandLockup({ compact = false }: { compact?: boolean }) {
   return (
-    <span className="flex items-center gap-2.5">
-      <BrandMark size={compact ? 28 : 32} />
-      <span className="flex items-baseline gap-2">
-        <span className="text-[15px] font-semibold tracking-[-0.02em] text-ink">Rizz</span>
-        <span aria-hidden="true" className="h-3.5 w-px self-center bg-line-strong" />
-        <span className="text-[13px] font-normal tracking-[-0.01em] text-muted">Support Center</span>
+    <span className="flex min-w-0 items-center gap-2.5">
+      <BrandMark size={compact ? 28 : 30} />
+      <span className="flex min-w-0 items-baseline gap-2">
+        <span className="text-[15px] font-semibold tracking-[-0.025em] text-ink">Rizz</span>
+        <span aria-hidden="true" className="h-3.5 w-px self-center bg-line" />
+        <span className="truncate text-[12.5px] font-normal tracking-[-0.005em] text-muted">
+          <span className="sm:hidden">Support</span>
+          <span className="hidden sm:inline">Support Center</span>
+        </span>
       </span>
     </span>
   );
@@ -45,7 +48,11 @@ export function BrandLockup({ compact = false }: { compact?: boolean }) {
 
 export function BrandHomeLink({ compact = false }: { compact?: boolean }) {
   return (
-    <Link to="/" aria-label="Rizz Support Center home" className="group inline-flex rounded-lg">
+    <Link
+      to="/"
+      aria-label="Rizz Support Center home"
+      className="group inline-flex min-w-0 rounded-lg transition-opacity hover:opacity-90"
+    >
       <BrandLockup compact={compact} />
     </Link>
   );
