@@ -39,6 +39,9 @@ interface IssueCardProps {
 export function IssueCard({ issue, pending, onToggleVote, index = 0, highlighted = false }: IssueCardProps) {
   const { toast } = useToast();
   const reported = formatDate(issue.createdAt);
+  // Keep the entry stagger to the first screenful; a 100-report board should
+  // never create 100 simultaneous composited animations on a phone.
+  const animateIn = index < 8;
 
   const copyLink = async () => {
     const url = `${window.location.origin}${window.location.pathname}#${issue.id}`;
@@ -66,8 +69,8 @@ export function IssueCard({ issue, pending, onToggleVote, index = 0, highlighted
   return (
     <article
       id={issue.id}
-      style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
-      className={`animate-fade-up scroll-mt-24 rounded-panel border bg-card p-5 shadow-card sm:p-6 ${
+      style={animateIn ? { animationDelay: `${Math.min(index, 5) * 40}ms` } : undefined}
+      className={`${animateIn ? 'animate-fade-up' : ''} scroll-mt-24 rounded-panel border bg-card p-5 shadow-card sm:p-6 ${
         highlighted ? 'border-lime/40 ring-1 ring-lime/15' : 'border-line-subtle'
       }`}
     >
@@ -81,10 +84,10 @@ export function IssueCard({ issue, pending, onToggleVote, index = 0, highlighted
         <ActionMenu label={`Actions for ${issue.title}`} items={items} />
       </div>
 
-      <h2 className="mt-4 text-[17px] font-medium leading-[1.35] tracking-[-0.025em] text-ink sm:text-[18px]">
+      <h3 className="mt-4 break-words text-[17px] font-medium leading-[1.35] tracking-[-0.025em] text-ink sm:text-[18px]">
         {issue.title}
-      </h2>
-      <p className="mt-2.5 whitespace-pre-line text-[13px] leading-[1.75] text-muted">
+      </h3>
+      <p className="mt-2.5 whitespace-pre-line break-words text-[13px] leading-[1.75] text-muted">
         {issue.description}
       </p>
 
@@ -100,7 +103,7 @@ export function IssueCard({ issue, pending, onToggleVote, index = 0, highlighted
           Need a private reply?
           <Link
             to={supportRequestHref(issue)}
-            className="inline-flex items-center gap-1 font-medium text-lime transition-colors hover:text-lime-deep"
+            className="inline-flex min-h-11 items-center gap-1 font-medium text-lime transition-colors hover:text-lime-deep sm:min-h-9"
           >
             Submit this problem to support
             <ArrowUpRight aria-hidden="true" className="size-3.5" />

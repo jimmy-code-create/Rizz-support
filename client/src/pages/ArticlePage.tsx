@@ -111,7 +111,7 @@ export function ArticlePage() {
         <li key={index}>
           <a
             href={`#${slugFor(index)}`}
-            className="block rounded py-1 text-[11.5px] leading-relaxed text-faint transition-colors hover:text-ink"
+            className="flex min-h-11 items-center rounded py-1 text-[11.5px] leading-relaxed text-faint transition-colors hover:text-ink lg:min-h-0"
           >
             {block.type === 'h2' ? block.text : ''}
           </a>
@@ -136,7 +136,7 @@ export function ArticlePage() {
           {category ? (
             <Link
               to={`/help?category=${category.id}`}
-              className="transition-opacity hover:opacity-80"
+              className="inline-flex min-h-11 items-center transition-opacity hover:opacity-80 sm:min-h-0"
             >
               <Badge tone="lime" dot>
                 {category.title}
@@ -200,7 +200,7 @@ export function ArticlePage() {
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle pt-5">
               <Link
                 to="/help"
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-ink"
+                className="inline-flex min-h-11 items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-ink"
               >
                 <ArrowLeft aria-hidden="true" className="size-3.5" />
                 All help articles
@@ -224,7 +224,7 @@ export function ArticlePage() {
               ) : null}
 
               <div className="rounded-card border border-line-subtle bg-card p-4">
-                <p className="text-[12.5px] font-medium text-ink">Need a person?</p>
+                <h2 className="text-[12.5px] font-medium text-ink">Need a person?</h2>
                 <p className="mt-1.5 text-[11.5px] leading-relaxed text-faint">
                   Submit a request and track the real status with your reference number.
                 </p>
@@ -251,7 +251,7 @@ export function ArticlePage() {
             </h2>
             <Link
               to="/help"
-              className="inline-flex items-center gap-1 text-[11.5px] font-medium text-muted transition-colors hover:text-lime"
+              className="inline-flex min-h-11 items-center gap-1 text-[11.5px] font-medium text-muted transition-colors hover:text-lime sm:min-h-9"
             >
               View all
               <ArrowUpRight aria-hidden="true" className="size-3.5" />

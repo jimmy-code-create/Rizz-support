@@ -60,7 +60,7 @@ export function FieldShell({
       {error ? (
         <p
           id={`${id}-error`}
-          className="flex items-start gap-1.5 text-[11.5px] leading-relaxed text-error"
+          className="animate-result-in flex items-start gap-1.5 text-[11.5px] leading-relaxed text-error"
         >
           <AlertCircle aria-hidden="true" className="mt-px size-3.5 shrink-0" />
           <span>{error}</span>
@@ -109,7 +109,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
           aria-required={required || undefined}
           aria-invalid={error ? true : undefined}
           aria-describedby={
-            [hint ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
+            [hint && !error ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
               .filter(Boolean)
               .join(' ') || undefined
           }
@@ -150,7 +150,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(function 
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={
-          [hint ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
+          [hint && !error ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
             .filter(Boolean)
             .join(' ') || undefined
         }
@@ -192,7 +192,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
           aria-required={required || undefined}
           aria-invalid={error ? true : undefined}
           aria-describedby={
-            [hint ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
+            [hint && !error ? `${fieldId}-description` : '', error ? `${fieldId}-error` : '']
               .filter(Boolean)
               .join(' ') || undefined
           }

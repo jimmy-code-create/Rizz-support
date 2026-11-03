@@ -55,7 +55,7 @@ const AUTHOR_LABEL: Record<string, string> = {
 
 function ResultSkeleton() {
   return (
-    <div className="mt-5 rounded-card border border-line-subtle bg-card p-6" aria-busy="true" aria-label="Loading request">
+    <div className="mt-5 rounded-card border border-line-subtle bg-card p-6" role="status" aria-busy="true" aria-label="Loading request">
       <div className="flex items-center justify-between gap-4">
         <Skeleton className="h-5 w-32" />
         <Skeleton className="h-6 w-20 rounded-full" />
@@ -372,7 +372,7 @@ export function TrackPage() {
                       <CalendarClock aria-hidden="true" className="size-3.5" />
                       Status shown as of {formatDateTime(ticket.updatedAt) ?? 'the last update'}.
                     </p>
-                    <Link to="/submit" className="text-[11.5px] font-medium text-lime transition-colors hover:text-lime-deep">
+                    <Link to="/submit" className="inline-flex min-h-11 items-center text-[11.5px] font-medium text-lime transition-colors hover:text-lime-deep sm:min-h-9">
                       Submit a new request
                     </Link>
                   </div>
@@ -485,7 +485,7 @@ export function TrackPage() {
                 Submit a new request explaining that you cannot find the original reference. Include the
                 email address you used so the team can look into it.
               </p>
-              <Link to="/submit" className="mt-3 inline-flex items-center gap-1 text-[11.5px] font-medium text-lime hover:text-lime-deep">
+              <Link to="/submit" className="mt-3 inline-flex min-h-11 items-center gap-1 text-[11.5px] font-medium text-lime hover:text-lime-deep sm:min-h-9">
                 Submit a request
                 <ArrowRight aria-hidden="true" className="size-3" />
               </Link>

@@ -44,6 +44,11 @@ describe('support search', () => {
     });
   });
 
+  it('includes support pages such as the issue board', () => {
+    const flat = searchSupport('issue board').flatMap((group) => group.hits);
+    expect(flat.some((hit) => hit.kind === 'page' && hit.href === '/issues')).toBe(true);
+  });
+
   it('finds troubleshooting content by body text', () => {
     const results = filterArticles('incognito');
     expect(results.some((article) => article.slug === 'troubleshooting-common-website-issues')).toBe(true);

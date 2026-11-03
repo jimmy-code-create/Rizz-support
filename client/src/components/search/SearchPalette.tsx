@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'motion/react';
 import { Search, X } from 'lucide-react';
 import { SearchBox } from '@/components/search/SearchBox';
@@ -26,9 +27,11 @@ function isEditableTarget(target: EventTarget | null): boolean {
  */
 export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [viewport, setViewport] = useState<{ top: number; height: number } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const restoreFocusRef = useRef<HTMLElement | null>(null);
   const reduceMotion = usePrefersReducedMotion();
+  const { pathname } = useLocation();
 
   const openPalette = useCallback(() => {
     restoreFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -38,8 +41,14 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
   const closePalette = useCallback(() => {
     setOpen(false);
     const target = restoreFocusRef.current;
-    if (target && document.contains(target)) window.setTimeout(() => target.focus(), 0);
+    const fallback = document.querySelector<HTMLElement>('button[aria-label="Search the support center"]');
+    const next = target && document.contains(target) ? target : fallback;
+    if (next) window.setTimeout(() => next.focus(), 0);
   }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -62,6 +71,15 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
     if (!open) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
+    const syncViewport = () => {
+      const vv = window.visualViewport;
+      setViewport({ top: vv?.offsetTop ?? 0, height: vv?.height ?? window.innerHeight });
+    };
+    syncViewport();
+    window.visualViewport?.addEventListener('resize', syncViewport);
+    window.visualViewport?.addEventListener('scroll', syncViewport);
+    window.addEventListener('resize', syncViewport);
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -89,6 +107,9 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
+      window.visualViewport?.removeEventListener('resize', syncViewport);
+      window.visualViewport?.removeEventListener('scroll', syncViewport);
+      window.removeEventListener('resize', syncViewport);
       document.removeEventListener('keydown', onKeyDown);
     };
   }, [open, closePalette]);
@@ -108,8 +129,12 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: reduceMotion ? 0 : 0.18 }}
-                  className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-black/70 px-4 pb-8 pt-[10vh] backdrop-blur-[6px] sm:pt-[14vh]"
-                  onMouseDown={(event) => {
+                  style={{
+                    top: viewport?.top ?? 0,
+                    height: viewport?.height ?? '100dvh',
+                  }}
+                  className="fixed inset-x-0 z-[90] flex items-start justify-center overflow-y-auto overscroll-contain bg-black/70 px-4 pb-6 pt-[max(1rem,8vh)] backdrop-blur-[6px] sm:pb-8 sm:pt-[12vh]"
+                  onPointerDown={(event) => {
                     if (event.target === event.currentTarget) closePalette();
                   }}
                 >
@@ -137,7 +162,7 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
                         type="button"
                         onClick={closePalette}
                         aria-label="Close search"
-                        className="flex min-h-9 items-center gap-1.5 rounded-md border border-line bg-white/[0.02] px-2.5 text-[10px] text-muted transition-colors hover:border-line-strong hover:text-ink"
+                        className="flex min-h-11 items-center gap-1.5 rounded-md border border-line bg-white/[0.02] px-2.5 text-[10px] text-muted transition-colors hover:border-line-strong hover:text-ink sm:min-h-9"
                       >
                         <X aria-hidden="true" className="size-3" />
                         Esc
@@ -148,7 +173,7 @@ export function SearchPaletteProvider({ children }: { children: ReactNode }) {
                         variant="modal"
                         autoFocus
                         showPopular
-                        onNavigate={closePalette}
+                        onNavigate={() => setOpen(false)}
                         inputLabel="Search the support center"
                       />
                     </div>

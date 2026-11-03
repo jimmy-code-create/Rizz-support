@@ -718,7 +718,7 @@ export function SubmitPage() {
                         type="button"
                         onClick={() => handleFile(null)}
                         aria-label={`Remove ${file.name}`}
-                        className="flex size-8 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink"
+                        className="flex size-11 items-center justify-center rounded-md text-faint transition-colors hover:bg-white/5 hover:text-ink sm:size-8"
                       >
                         <X aria-hidden="true" className="size-3.5" />
                       </button>
@@ -726,7 +726,7 @@ export function SubmitPage() {
                   ) : null}
 
                   {fileError ? (
-                    <p id="attachment-error" role="alert" className="mt-2 flex items-center gap-1.5 text-[11.5px] text-error">
+                    <p id="attachment-error" role="alert" className="animate-result-in mt-2 flex items-center gap-1.5 text-[11.5px] text-error">
                       <AlertTriangle aria-hidden="true" className="size-3.5" />
                       {fileError}
                     </p>
@@ -783,7 +783,7 @@ export function SubmitPage() {
                             </span>
                             <Link
                               to={`/track?ticket=${encodeURIComponent(duplicateReference)}`}
-                              className="inline-flex items-center gap-1 text-[11.5px] font-medium text-lime hover:text-lime-deep"
+                              className="inline-flex min-h-11 items-center gap-1 text-[11.5px] font-medium text-lime hover:text-lime-deep sm:min-h-9"
                             >
                               Track existing request
                               <ArrowRight aria-hidden="true" className="size-3" />
@@ -836,11 +836,11 @@ export function SubmitPage() {
                 ))}
               </ul>
               <div className="mt-4 flex flex-wrap gap-2 border-t border-line-subtle pt-4">
-                <Link to="/help" className="text-[11.5px] font-medium text-muted hover:text-lime">
+                <Link to="/help" className="inline-flex min-h-11 items-center text-[11.5px] font-medium text-muted hover:text-lime sm:min-h-9">
                   Help articles
                 </Link>
                 <span aria-hidden="true" className="text-faint">·</span>
-                <Link to="/faqs" className="text-[11.5px] font-medium text-muted hover:text-lime">
+                <Link to="/faqs" className="inline-flex min-h-11 items-center text-[11.5px] font-medium text-muted hover:text-lime sm:min-h-9">
                   FAQs
                 </Link>
               </div>

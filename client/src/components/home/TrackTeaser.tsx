@@ -43,7 +43,7 @@ export function TrackTeaser() {
             </p>
             <Link
               to="/track"
-              className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-lime"
+              className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-lime sm:min-h-9"
             >
               Open full ticket tracking
               <ArrowRight aria-hidden="true" className="size-3.5" />
@@ -79,7 +79,7 @@ export function TrackTeaser() {
                     spellCheck={false}
                     aria-invalid={error ? true : undefined}
                     aria-describedby={error ? 'teaser-reference-error' : 'teaser-reference-hint'}
-                    className="h-10 w-full rounded-[10px] border border-line bg-surface pl-9 pr-3 font-mono text-[16px] sm:text-[12.5px] uppercase tracking-[0.04em] text-ink transition-[border-color,box-shadow] placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-faint focus:border-lime/40 focus:outline-none focus:ring-2 focus:ring-lime/10 aria-[invalid=true]:border-error/50"
+                    className="h-11 w-full rounded-[10px] border border-line bg-surface pl-9 pr-3 sm:h-10 font-mono text-[16px] sm:text-[12.5px] uppercase tracking-[0.04em] text-ink transition-[border-color,box-shadow] placeholder:font-sans placeholder:normal-case placeholder:tracking-normal placeholder:text-faint focus:border-lime/40 focus:outline-none focus:ring-2 focus:ring-lime/10 aria-[invalid=true]:border-error/50"
                   />
                 </div>
                 <Button type="submit" size="sm" className="h-10 w-full shrink-0 px-4 sm:w-auto">

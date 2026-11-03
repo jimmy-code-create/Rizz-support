@@ -2,7 +2,7 @@ import { ARTICLES, articleSearchText, type HelpArticle } from '@/content/article
 import { FAQS, type Faq } from '@/content/faqs';
 import { SUPPORT_CATEGORIES, categoryById } from '@shared/support';
 
-export type SearchKind = 'article' | 'faq' | 'category';
+export type SearchKind = 'article' | 'faq' | 'category' | 'page';
 
 export interface SearchHit {
   kind: SearchKind;
@@ -32,6 +32,7 @@ const KIND_LABEL: Record<SearchKind, string> = {
   article: 'Help articles',
   faq: 'FAQs',
   category: 'Categories',
+  page: 'Support pages',
 };
 
 function normalize(value: string): string {
@@ -82,6 +83,64 @@ function faqHit(faq: Faq): IndexEntry {
   };
 }
 
+const PAGE_INDEX: IndexEntry[] = [
+  {
+    kind: 'page',
+    id: 'help',
+    title: 'Help articles',
+    description: 'Browse every step-by-step guide in the support center.',
+    href: '/help',
+    keywords: 'help articles guides browse',
+    titleNormalized: normalize('Help articles'),
+    haystack: normalize('help articles guides browse every step by step guide support center'),
+    scoreBase: 3,
+  },
+  {
+    kind: 'page',
+    id: 'faqs',
+    title: 'Frequently asked questions',
+    description: 'Short answers about Rizz accounts, safety, and support.',
+    href: '/faqs',
+    keywords: 'faqs questions answers frequently asked',
+    titleNormalized: normalize('Frequently asked questions'),
+    haystack: normalize('faqs questions answers frequently asked rizz accounts safety support'),
+    scoreBase: 3,
+  },
+  {
+    kind: 'page',
+    id: 'issues',
+    title: 'Community issue board',
+    description: 'See public reports, upvote a problem, or report a new issue.',
+    href: '/issues',
+    keywords: 'issues bug reports upvote community board problem',
+    titleNormalized: normalize('Community issue board'),
+    haystack: normalize('issues bug reports upvote community board problem public report new issue'),
+    scoreBase: 3,
+  },
+  {
+    kind: 'page',
+    id: 'submit',
+    title: 'Submit a support request',
+    description: 'Send the details privately and get a real ticket reference.',
+    href: '/submit',
+    keywords: 'submit contact support request ticket help',
+    titleNormalized: normalize('Submit a support request'),
+    haystack: normalize('submit support request ticket contact help private'),
+    scoreBase: 3,
+  },
+  {
+    kind: 'page',
+    id: 'track',
+    title: 'Track a support request',
+    description: 'Check the real status of a ticket with its reference and email.',
+    href: '/track',
+    keywords: 'track ticket status reference lookup',
+    titleNormalized: normalize('Track a support request'),
+    haystack: normalize('track ticket status reference lookup check request'),
+    scoreBase: 3,
+  },
+];
+
 const CATEGORY_INDEX: IndexEntry[] = SUPPORT_CATEGORIES.map((category) => ({
   kind: 'category',
   id: category.id,
@@ -94,7 +153,7 @@ const CATEGORY_INDEX: IndexEntry[] = SUPPORT_CATEGORIES.map((category) => ({
   scoreBase: 1,
 }));
 
-const INDEX: IndexEntry[] = [...ARTICLES.map(articleHit), ...FAQS.map(faqHit), ...CATEGORY_INDEX];
+const INDEX: IndexEntry[] = [...ARTICLES.map(articleHit), ...FAQS.map(faqHit), ...CATEGORY_INDEX, ...PAGE_INDEX];
 
 export function searchSupport(query: string, limitPerGroup = 5): SearchGroup[] {
   const normalized = normalize(query);
@@ -114,7 +173,7 @@ export function searchSupport(query: string, limitPerGroup = 5): SearchGroup[] {
     return [{ entry, score }];
   }).sort((a, b) => b.score - a.score || a.entry.title.length - b.entry.title.length);
 
-  const groups: SearchGroup[] = (['article', 'faq', 'category'] as const).flatMap((kind) => {
+  const groups: SearchGroup[] = (['article', 'faq', 'page', 'category'] as const).flatMap((kind) => {
     const hits = scored
       .filter((item) => item.entry.kind === kind)
       .slice(0, limitPerGroup)

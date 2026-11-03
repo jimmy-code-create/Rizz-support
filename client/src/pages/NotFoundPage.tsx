@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Compass } from 'lucide-react';
 import { usePageMeta } from '@/lib/seo';
@@ -6,7 +5,6 @@ import { buttonClasses } from '@/components/ui/Button';
 import { SearchBox } from '@/components/search/SearchBox';
 
 export function NotFoundPage() {
-  const [artFailed, setArtFailed] = useState(false);
   usePageMeta({
     title: 'Page not found',
     description: 'The page you are looking for does not exist or has moved.',
@@ -20,20 +18,9 @@ export function NotFoundPage() {
         <div className="bg-grid absolute inset-0 opacity-60" />
       </div>
       <div className="container-page relative flex flex-col items-center py-20 text-center md:py-28">
-        {!artFailed ? (
-          <img
-            src="https://rizzapp.onrender.com/cats/searching.svg"
-            alt=""
-            aria-hidden="true"
-            className="mb-6 h-24 w-auto opacity-90"
-            onError={() => setArtFailed(true)}
-            draggable={false}
-          />
-        ) : (
-          <span className="mb-6 flex size-14 items-center justify-center rounded-card border border-line-subtle bg-card text-muted">
-            <Compass aria-hidden="true" className="size-6" />
-          </span>
-        )}
+        <span className="mb-6 flex size-14 items-center justify-center rounded-card border border-line-subtle bg-card text-muted">
+          <Compass aria-hidden="true" className="size-6" />
+        </span>
 
         <p className="font-mono text-[11px] tracking-[0.22em] text-moss-soft">404</p>
         <h1 className="page-title mt-3 max-w-xl">

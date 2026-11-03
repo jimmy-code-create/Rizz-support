@@ -181,7 +181,7 @@ export function IssuesPage() {
             </div>
 
             {state === 'loading' ? (
-              <div className="mt-5 space-y-3" aria-label="Loading public reports">
+              <div className="mt-5 space-y-3" role="status" aria-label="Loading public reports">
                 {[0, 1, 2].map((entry) => (
                   <div
                     key={entry}
@@ -264,9 +264,9 @@ export function IssuesPage() {
             ) : null}
           </div>
 
-          <aside aria-label="About the issue board" className="space-y-3 lg:sticky lg:top-24 lg:self-start">
+          <aside aria-label="About the issue board" className="space-y-3 lg:sticky lg:top-28 lg:self-start">
             <div className="rounded-card border border-line-subtle bg-card p-5">
-              <p className="text-[12.5px] font-medium text-ink">How this board works</p>
+              <h2 className="text-[12.5px] font-medium text-ink">How this board works</h2>
               <p className="mt-2 text-[11.5px] leading-[1.7] text-muted">
                 Upvote a report if you are experiencing the same thing. Votes are saved and help
                 show which problems affect the most people.
@@ -278,7 +278,7 @@ export function IssuesPage() {
             </div>
 
             <div className="rounded-card border border-line-subtle bg-surface/60 p-5">
-              <p className="text-[12.5px] font-medium text-ink">Need a private reply?</p>
+              <h2 className="text-[12.5px] font-medium text-ink">Need a private reply?</h2>
               <p className="mt-2 text-[11.5px] leading-[1.7] text-muted">
                 Submit a support request with your contact details. Off the public board, only the
                 support team can see it.

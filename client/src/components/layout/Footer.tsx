@@ -57,7 +57,7 @@ export function Footer() {
               href={RIZZ_SITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-lime"
+              className="mt-4 inline-flex min-h-11 items-center gap-1.5 text-[12px] font-medium text-muted transition-colors hover:text-lime sm:min-h-9"
             >
               Visit rizzapp.onrender.com
               <ArrowUpRight aria-hidden="true" className="size-3.5" />
@@ -77,7 +77,7 @@ export function Footer() {
                 <li key={link.to}>
                   <Link
                     to={link.to}
-                    className="footer-link -mx-1 inline-flex min-h-9 items-center rounded px-1 text-[12.5px] text-muted transition-colors hover:text-ink"
+                    className="footer-link -mx-1 inline-flex min-h-11 items-center rounded px-1 text-[12.5px] text-muted transition-colors hover:text-ink sm:min-h-9"
                   >
                     {link.label}
                   </Link>
@@ -99,7 +99,7 @@ export function Footer() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="footer-link -mx-1 inline-flex min-h-9 items-center gap-1.5 rounded px-1 text-[12.5px] text-muted transition-colors hover:text-ink"
+                    className="footer-link -mx-1 inline-flex min-h-11 items-center gap-1.5 rounded px-1 text-[12.5px] text-muted transition-colors hover:text-ink sm:min-h-9"
                   >
                     {link.label}
                     <ArrowUpRight aria-hidden="true" className="size-3 text-faint" />
@@ -117,7 +117,7 @@ export function Footer() {
           <button
             type="button"
             onClick={() => window.scrollTo({ top: 0, behavior: preferredScrollBehavior() })}
-            className="group inline-flex min-h-9 items-center gap-1.5 self-start text-[11px] text-faint transition-colors hover:text-ink sm:self-auto"
+            className="group inline-flex min-h-11 items-center gap-1.5 self-start text-[11px] text-faint transition-colors hover:text-ink sm:min-h-9 sm:self-auto"
           >
             Back to top
             <ArrowUp aria-hidden="true" className="size-3.5 transition-transform duration-200 group-hover:-translate-y-0.5" />
