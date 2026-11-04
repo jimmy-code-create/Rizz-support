@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/cn';
+import '@/styles/lime-pages.css';
 
 interface PageHeaderProps {
   eyebrow?: string;
@@ -56,10 +57,19 @@ export function PageHeader({
         ) : null}
 
         <div className="max-w-3xl">
-          {eyebrow ? <p className="eyebrow mb-3.5">{eyebrow}</p> : null}
-          <h1 className="page-title">{title}</h1>
+          <img src="/brand/rizz-mark.svg" alt="" aria-hidden="true" className="ph-logo mb-5 size-11" />
+          {eyebrow ? (
+            <p className="ph-pill mb-5"><span className="ph-dot" aria-hidden="true" />{eyebrow}</p>
+          ) : null}
+          <h1 className="page-title ph-title">
+            {(() => {
+              const words = title.split(' ');
+              const last = words.pop();
+              return (<>{words.join(' ')}{words.length ? ' ' : ''}<span className="text-shine">{last}</span></>);
+            })()}
+          </h1>
           {description ? (
-            <p className="mt-4 max-w-[62ch] text-[13.5px] leading-[1.75] text-muted sm:text-[14px]">
+            <p className="ph-desc mt-4 max-w-[62ch] text-[13.5px] leading-[1.75] text-muted sm:text-[14px]">
               {description}
             </p>
           ) : null}
