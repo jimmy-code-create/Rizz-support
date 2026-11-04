@@ -8,6 +8,7 @@ import { TrackTeaser } from '@/components/home/TrackTeaser';
 import { FaqPreview } from '@/components/home/FaqPreview';
 import { ContactCTA } from '@/components/home/ContactCTA';
 import { buttonClasses } from '@/components/ui/Button';
+import { Reveal } from '@/components/ui/Reveal';
 
 export function HomePage() {
   usePageMeta({
@@ -21,12 +22,12 @@ export function HomePage() {
       <Hero />
 
       <section className="section" aria-labelledby="categories-heading">
-        <div className="container-page">
+        <Reveal className="container-page">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-xl">
               <p className="eyebrow">Get help</p>
-              <h2 id="categories-heading" className="section-title mt-3.5">
-                Browse support categories
+              <h2 id="categories-heading" className="section-title-bold mt-3.5">
+                Browse support <span className="text-lime">categories</span>
               </h2>
               <p className="mt-3 max-w-[52ch] text-[13px] leading-[1.7] text-muted">
                 Choose the area that matches your question. Every category leads to guides and the
@@ -49,13 +50,21 @@ export function HomePage() {
           <div className="mt-8 sm:mt-10">
             <CategoryGrid />
           </div>
-        </div>
+        </Reveal>
       </section>
 
-      <PopularArticles />
-      <TrackTeaser />
-      <FaqPreview />
-      <ContactCTA />
+      <Reveal>
+        <PopularArticles />
+      </Reveal>
+      <Reveal>
+        <TrackTeaser />
+      </Reveal>
+      <Reveal>
+        <FaqPreview />
+      </Reveal>
+      <Reveal>
+        <ContactCTA />
+      </Reveal>
     </>
   );
 }
