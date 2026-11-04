@@ -1,9 +1,36 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/cn';
 
-// Local, verified brand mark. The remote cat logo returns a server error and
-// caused a broken-image flash in the header, so it is not requested at runtime.
-const BRAND_MARK = '/brand/rizz-mark.svg';
+// The official Rizz cat logo. It is hosted by the app, so request it directly
+// and keep the local mark only as a fallback for a cold or unavailable asset.
+export const BRAND_LOGO_URL = 'https://rizzapp.onrender.com/brand/rizz-cat-logo.svg';
+export const BRAND_LOGO_FALLBACK = '/brand/rizz-mark.svg';
+
+interface BrandLogoProps {
+  className?: string;
+  width?: number;
+  height?: number;
+}
+
+export function BrandLogo({ className, width, height }: BrandLogoProps) {
+  const [src, setSrc] = useState(BRAND_LOGO_URL);
+
+  return (
+    <img
+      src={src}
+      alt=""
+      aria-hidden="true"
+      width={width}
+      height={height}
+      className={className}
+      onError={() => {
+        if (src !== BRAND_LOGO_FALLBACK) setSrc(BRAND_LOGO_FALLBACK);
+      }}
+      draggable={false}
+    />
+  );
+}
 
 export function BrandMark({ size = 30, className }: { size?: number; className?: string }) {
   return (
@@ -14,15 +41,7 @@ export function BrandMark({ size = 30, className }: { size?: number; className?:
       )}
       style={{ width: size, height: size }}
     >
-      <img
-        src={BRAND_MARK}
-        alt=""
-        aria-hidden="true"
-        width={size - 8}
-        height={size - 8}
-        className="object-contain"
-        draggable={false}
-      />
+      <BrandLogo width={size - 8} height={size - 8} className="object-contain" />
     </span>
   );
 }

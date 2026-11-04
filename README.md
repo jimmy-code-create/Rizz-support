@@ -41,11 +41,12 @@ These were not added because no verified destination or policy exists:
   published, so the site does not invent them.
 - **Fake ticket statuses, fake success messages, or placeholder article counts.**
 
-The header uses the local, verified brand mark. The remote cat logo on the Rizz site returned a
-server error, so the client no longer requests it at runtime and cannot flash a broken image. All
-help copy was checked against the
-live Rizz pages (`/`, `/signup`, `/login`); sign-in uses **email + password**, with a verified
-`/reset-password` flow behind the "Forgot?" link.
+The header and page headers use the official Rizz cat logo from
+`https://rizzapp.onrender.com/brand/rizz-cat-logo.svg`. The local mark is kept only as an error
+fallback, so a cold or unavailable Rizz asset never leaves a broken image. The server CSP already
+permits that image origin. All help copy was checked against the live Rizz pages (`/`, `/signup`,
+`/login`); sign-in uses **email + password**, with a verified `/reset-password` flow behind the
+"Forgot?" link.
 
 ---
 

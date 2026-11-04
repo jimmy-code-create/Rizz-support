@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
+import { BrandLogo } from '@/components/ui/Brand';
 import { cn } from '@/lib/cn';
 import '@/styles/lime-pages.css';
 
@@ -57,7 +58,7 @@ export function PageHeader({
         ) : null}
 
         <div className="max-w-3xl">
-          <img src="/brand/rizz-mark.svg" alt="" aria-hidden="true" className="ph-logo mb-5 size-11" />
+          <BrandLogo className="ph-logo mb-5 size-11" />
           {eyebrow ? (
             <p className="ph-pill mb-5"><span className="ph-dot" aria-hidden="true" />{eyebrow}</p>
           ) : null}
