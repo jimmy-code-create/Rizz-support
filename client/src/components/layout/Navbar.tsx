@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion, useScroll } from 'motion/react';
 import { ArrowRight, ArrowUpRight, Menu, Plus, Search, X } from 'lucide-react';
 import { cn } from '@/lib/cn';
 import { BrandHomeLink } from '@/components/ui/Brand';
@@ -40,6 +40,7 @@ export function Navbar() {
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const [shortcut, setShortcut] = useState('Ctrl K');
   const reduceMotion = usePrefersReducedMotion();
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     setShortcut(isMac() ? '⌘ K' : 'Ctrl K');
@@ -115,6 +116,11 @@ export function Navbar() {
             : 'border-line-subtle/70 bg-base/70 backdrop-blur-md',
         )}
       >
+        <motion.div
+          aria-hidden="true"
+          className="scroll-progress"
+          style={{ scaleX: reduceMotion ? 0 : scrollYProgress }}
+        />
         <div className="container-page">
           <div className="flex h-16 items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-7">
@@ -170,7 +176,7 @@ export function Navbar() {
 
               <Link
                 to="/submit"
-                className={buttonClasses({ size: 'sm', className: 'hidden sm:inline-flex' })}
+                className={buttonClasses({ size: 'sm', className: 'btn-glow max-sm:hidden' })}
               >
                 <Plus aria-hidden="true" className="size-3.5" />
                 Submit a request
@@ -183,7 +189,7 @@ export function Navbar() {
                 className={buttonClasses({
                   variant: 'ghost',
                   size: 'sm',
-                  className: 'hidden lg:inline-flex',
+                  className: 'max-lg:hidden',
                 })}
               >
                 Back to Rizz
