@@ -1,0 +1,13 @@
+/* ---- Lime page system (Convio-style) ---- */
+.ph-pill{display:inline-flex;align-items:center;gap:.6rem;padding:.45rem 1rem;border-radius:999px;border:1px solid color-mix(in oklab,var(--color-lime,#c6ff3d) 35%,transparent);background:color-mix(in oklab,var(--color-lime,#c6ff3d) 8%,transparent);color:var(--color-lime,#c6ff3d);font-size:12px;font-weight:600;letter-spacing:.02em}
+.ph-dot{width:.5rem;height:.5rem;border-radius:999px;background:var(--color-lime,#c6ff3d);box-shadow:0 0 12px var(--color-lime,#c6ff3d)}
+.ph-title{font-weight:800!important;letter-spacing:-.035em;font-size:clamp(2.1rem,6.5vw,4rem)!important;line-height:1.02!important}
+.ph-logo{filter:drop-shadow(0 0 18px color-mix(in oklab,var(--color-lime,#c6ff3d) 55%,transparent))}
+.ph-logo,.ph-pill,.ph-title,.ph-desc{animation:ph-up .7s cubic-bezier(.2,.8,.2,1) both}
+.ph-pill{animation-delay:.08s}.ph-title{animation-delay:.16s}.ph-desc{animation-delay:.26s}
+@keyframes ph-up{from{opacity:0;transform:translateY(14px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+main :where(article,section,form) :where([class*="rounded-2xl"],[class*="rounded-xl"]){transition:border-color .3s,box-shadow .3s,transform .3s}
+main :where(article,section,form) :where([class*="rounded-2xl"]):hover{border-color:color-mix(in oklab,var(--color-lime,#c6ff3d) 40%,transparent);box-shadow:0 0 0 1px color-mix(in oklab,var(--color-lime,#c6ff3d) 15%,transparent),0 20px 50px -25px color-mix(in oklab,var(--color-lime,#c6ff3d) 45%,transparent)}
+main button[type="submit"]{border-radius:999px}
+@media (max-width:640px){main input,main textarea,main select{font-size:16px}}
+@media (prefers-reduced-motion:reduce){.ph-logo,.ph-pill,.ph-title,.ph-desc{animation:none}main :where([class*="rounded-2xl"]){transition:none}}
